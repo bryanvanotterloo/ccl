@@ -1,0 +1,347 @@
+/* Element/Generic Styles */
+
+@font-face {
+  font-family: "Charm";
+  src: url("fonts/Charm-Regular.ttf");
+}
+
+*{
+    color: #FFFFFF;
+    text-shadow: none;
+    font-size: 18px;
+    line-height: 1.6;
+    letter-spacing: 0.5px;
+
+    --page-background-color: #0f0f12;
+    --primary-surface: #1a1a1f;
+    --secondary-surface: #252530;
+    --button-normal-color: #1a1a1f;
+    --button-highlight-color: #00d9ff;
+    --button-disabled-color: #252530;
+    --bar-background-color: #0f0f12;
+    --accent-primary: #00d9ff;
+    --accent-secondary: #ff006e;
+    --text-secondary: #b0b0b8;
+    --success-color: #00d9ff;
+    --warning-color: #ff9500;
+}
+
+html {
+    background-color: var(--page-background-color);
+}
+
+button {
+    transition: all 0.3s ease;
+    background-color: var(--button-normal-color);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+button:enabled:hover {
+    cursor: pointer;
+    background-color: var(--secondary-surface);
+    border-color: rgba(0, 217, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px);
+}
+
+button:enabled:active {
+    background-color: var(--accent-primary);
+    color: #0f0f12;
+    border-color: var(--accent-primary);
+    transform: translateY(0px);
+}
+
+button:disabled {
+    opacity: 40%;
+    cursor: not-allowed;
+}
+
+img { 
+    image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
+    image-rendering: -moz-crisp-edges;          /* Firefox                        */
+    image-rendering: -o-crisp-edges;            /* Opera                          */
+    image-rendering: -webkit-optimize-contrast; /* Chrome (and eventually Safari) */
+    image-rendering: pixelated;                 /* Universal support since 2021   */
+    image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
+    -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+
+}
+
+/* Class Styles */
+
+.seperator {
+    width: 90%;
+    height: 1px;
+    margin-left: 5%;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    background-image: linear-gradient(to right, rgba(0, 217, 255, 0), rgba(0, 217, 255, 0.2), rgba(0, 217, 255, 0));
+}
+
+.game_tab_select {
+    transition: all 0.3s ease;
+    flex-grow: 1;
+    text-align: center;
+    display: block;
+    margin-left: 4px;
+    margin-right: 4px;
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    box-shadow: none;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.game_tab_select[data-selected=true] {
+    font-weight: bold;
+    color: var(--accent-primary);
+    border-bottom-color: var(--accent-primary);
+}
+
+.game_tab_select:hover {
+    color: var(--accent-primary);
+    border-bottom-color: rgba(0, 217, 255, 0.5);
+}
+
+.dungeon_background {
+    height: 64px;
+    width: 64px;
+    border-radius: 2px;
+    box-shadow: inset 0 0 8px rgba(0, 217, 255, 0.1);
+}
+
+.fill_bar_base {
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 4px;
+    background-color: var(--bar-background-color);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+div > .fill_bar {
+    width: calc(100% * var(--percent));
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.25s ease-out;
+}
+
+.upgrade_button {
+    width: 160px;
+    height: 160px;
+    margin: 8px;
+    border-radius: 8px;
+    background-color: var(--secondary-surface);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.upgrade_button:hover {
+    background-color: var(--secondary-surface);
+    border-color: rgba(0, 217, 255, 0.5);
+    box-shadow: 0 0 12px rgba(0, 217, 255, 0.3), 0 4px 12px rgba(0, 0, 0, 0.5);
+    transform: translateY(-4px);
+}
+
+.upgrade_button[_maxxed=true] {
+    fill: var(--success-color);
+    opacity: 0.6;
+}
+
+.upgrade_button > .upgrade_title {
+    color: inherit;
+    display: inline-block;
+    position: relative;
+    vertical-align: top;
+    font-weight: bold;
+    width: 100%;
+}
+
+.upgrade_button > .upgrade_level {
+    color: inherit;
+    position: relative;
+    vertical-align: top;
+
+    font-size: 60%;
+    margin-top: -2px;
+    margin-bottom: 2px;
+}
+
+.upgrade_button .upgrade_description, .upgrade_button > .upgrade_effect, .upgrade_button > .upgrade_cost {
+    color: inherit;
+    display: inline-block;
+    position: relative;
+
+    font-size: 60%;
+    line-height: 125%;
+}
+
+.upgrade_button > .upgrade_effect {
+    padding-top: 8px;
+}
+
+.upgrade_button > .upgrade_cost {
+    font-weight: bold;
+}
+
+.dungeon_entity_icon {
+    position: absolute;
+    margin-left: calc(64px + 64px * var(--progress) + var(--offset));
+    transition: margin-left 0.15s;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    filter: drop-shadow(0 0 4px rgba(0, 217, 255, 0.3));
+}
+
+/* ID Styles */
+
+#game_tab_select_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 100%;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.1);
+}
+
+#main_div {
+    position: absolute;
+    order: 1;
+    margin-left: calc(50% - 384px);
+    margin-right: calc(50% - 384px);
+    width: 768px;
+    border-radius: 8px;
+    background-color: var(--primary-surface);
+    border: 1px solid rgba(0, 217, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+#title_div {
+    padding-top: 24px;
+    padding-bottom: 16px;
+    align-content: center;
+    text-align: center;
+    font-size: 150%;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.05) 0%, rgba(255, 0, 110, 0.05) 100%);
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+#title-text span {
+    display: inline-block;
+    font-size: 150%;
+    animation: text_wave 7.5s infinite;
+    animation-timing-function: linear;
+    animation-delay: calc(-0.5s * var(--i));
+}
+
+#tab_main {
+    justify-content: center;
+}
+
+#dungeon_container {
+    display: inline-flex;
+}
+
+#dungeon_tiles {
+    order: 1000;
+    display: inline-flex;
+    justify-content: center;
+    width: 100%;
+    height: 64px;
+    padding-left: 64px;
+}
+
+#currency_display {
+    overflow: clip;
+    transition: height 1s;
+    transition-timing-function: cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+#currency_display > div {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#start_run_button, #prestige_button {
+    width: 90%;
+
+    height: 32px;
+
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+#player_stats_container {
+    margin-left: 32px;
+    margin-right: 32px;
+    
+    width: calc(50% - 128px);
+}
+
+#enemy_stats_container {
+    margin-left: 32px;
+    margin-right: 32px;
+    
+    width: calc(50% - 128px);
+}
+
+#stats_container {
+    margin-top: 4px;
+    display: flex;
+    vertical-align: top;
+    justify-content: center;
+}
+
+#courage_bar, #health_bar, #enemy_health_bar {
+    height: 32px;
+    background-color: var(--bar-background-color);
+    border-radius: 4px;
+    margin-bottom: 12px;
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    position: relative;
+}
+
+.bar_text {
+    color: #ffffff;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    font-size: 14px;
+}
+
+.upgrade_container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 12px 8px;
+}
+
+/* Other */
+
+@keyframes text_wave {
+  0%,50%,100% {
+    transform: translateY(0);
+  }
+  12.5%,37.5% {
+    transform: translateY(-1.5px);
+  }
+  25% {
+    transform: translateY(-2px);
+  }
+  62.5%,87.5% {
+    transform: translateY(1.5px);
+  }
+  75% {
+    transform: translateY(2px);
+  }
+}

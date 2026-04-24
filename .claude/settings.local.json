@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"calculate_prestige_reward\" \"\\\\\\\\FS-OFFICE\\\\ITDept\\\\1_APPS\\\\BryanVO\\\\Python Source Code\\\\InetApp\\\\Other\\\\ccl\\\\scripts\\\\main.js\")",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "Bash(cd \"\\\\\\\\FS-OFFICE\\\\ITDept\\\\1_APPS\\\\BryanVO\\\\Python Source Code\\\\InetApp\\\\Other\\\\ccl\\\\scripts\")",
+      "Read(///FS-OFFICE/ITDept/FS-OFFICE/ITDept/1_APPS/BryanVO/Python Source Code/InetApp/Other/ccl/scripts/**)"
+    ]
+  }
+}
