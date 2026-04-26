@@ -190,7 +190,7 @@ function calculate_prestige_reward(data) {
     }
     else
     {
-        return_prestige = Math.floor(Math.pow(data.persist.other.records.floor, 0.7) - 2)
+        return_prestige = Math.pow(data.persist.other.records.floor, 0.7) - 2
     }
 
     return return_prestige
