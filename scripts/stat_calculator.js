@@ -189,7 +189,7 @@ function calculate_prestige_reward(data) {
         return_prestige = 0
     }
     else
-    
+    {
         return_prestige = Math.pow(data.persist.other.records.floor, 0.7) - 2
     }
 
