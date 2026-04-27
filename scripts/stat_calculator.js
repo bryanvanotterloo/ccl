@@ -1,3 +1,13 @@
+function formatNumber(num) {
+    if (num >= 1000000) {
+        return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
+    }
+    if (num >= 1000) {
+        return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
+    }
+    return num.toString()
+}
+
 function calculate_courage_change(data) {
     let run_data = data.non_persist.run
 
@@ -197,9 +207,8 @@ function calculate_prestige_reward(data) {
 }
 
 function calculate_ascension_reward(data) {
-    // Ascension points = prestige count in current layer + floor bonus
-    let prestige_count = data.persist.layers.prestige
-    let floor_bonus = Math.floor((data.persist.other.records.floor - 1) / 3)
+    let prestige_count = data.persist.layers.prestige / 10
+    let floor_bonus = Math.floor((data.persist.layers.max_floor_this_ascension - 1) / 5)
 
     return prestige_count + floor_bonus
 }
