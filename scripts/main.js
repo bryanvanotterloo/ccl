@@ -26,7 +26,8 @@ function load_data() {
             },
             layers: {
                 prestige: 0,
-                ascension: 0
+                ascension: 0,
+                max_floor_this_ascension: 0
             },
             other: {
                 settings: {
@@ -1845,6 +1846,7 @@ function attempt_ascension(data) {
     data.persist.currencies.ascension_points += calculate_ascension_reward(data)
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
     data.persist.other.records.floor = 0
+    data.persist.layers.max_floor_this_ascension = 0
 
     document.getElementById("floor_record_text").innerHTML = ""
     changeupgradetab("basic")
@@ -1999,7 +2001,8 @@ function game_tick(data) {
                     if (data.non_persist.run.progress >= 10) {
                         data.non_persist.run.progress -= 10
                         data.non_persist.run.floor += 1
-                        
+                        data.persist.layers.max_floor_this_ascension = Math.max(data.persist.layers.max_floor_this_ascension, data.non_persist.run.floor)
+
                         if (data.non_persist.run.floor > 2) {
                             if (data.persist.unlocks.extended_upgrades != true) {
                                 data.persist.unlocks.extended_upgrades = true
