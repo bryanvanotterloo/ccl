@@ -5,7 +5,7 @@ function formatNumber(num) {
     if (num >= 1000) {
         return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
     }
-    return num.toString()
+    return num.toFixed(2)
 }
 
 function calculate_courage_change(data) {
@@ -71,7 +71,7 @@ function calculate_health(data) {
 
     return_health += (data.persist.upgrades.prestige_health > 0? Math.pow(2, data.persist.upgrades.prestige_health) : 0)
 
-    return_health += (data.persist.upgrades.transcendent_health > 0? 1 * data.persist.upgrades.transcendent_health * data.persist.layers.ascension : 0)
+    return_health += (data.persist.upgrades.ascended_health > 0? 1 * data.persist.upgrades.ascended_health * data.persist.layers.ascension : 0)
 
     return return_health
 }
@@ -90,6 +90,8 @@ function calculate_defense(data) {
     return_defense += (data.persist.upgrades.prestige_defense > 0? data.persist.upgrades.prestige_defense : 0)
 
     return_defense += (data.persist.upgrades.enhance_armor > 0? 2 * data.persist.upgrades.enhance_armor : 0)
+
+    return_defense += (data.persist.upgrades.ascended_defense > 0? 0.5 * data.persist.upgrades.ascended_defense * data.persist.layers.ascension : 0)
 
     return return_defense
 }
@@ -141,7 +143,7 @@ function calculate_research_gain(data) {
 
     base_research_gain *= (data.persist.upgrades.prestige_research > 0? 1 + 0.5 * data.persist.upgrades.prestige_research : 1)
 
-    base_research_gain *= (data.persist.upgrades.transcendent_research > 0? 1 + (0.5 * data.persist.upgrades.transcendent_research * data.persist.layers.ascension) : 1)
+    base_research_gain *= (data.persist.upgrades.ascended_research > 0? 1 + (0.5 * data.persist.upgrades.ascended_research * data.persist.layers.ascension) : 1)
 
     return base_research_gain
 }
@@ -180,7 +182,7 @@ function calculate_start_courage(data) {
 
     return_courage *= (data.persist.upgrades.prestige_courage > 0? 1 + 0.25 * data.persist.upgrades.prestige_courage : 1)
 
-    return_courage += (data.persist.upgrades.transcendent_courage > 0? 0.5 * data.persist.upgrades.transcendent_courage * data.persist.layers.ascension : 0)
+    return_courage += (data.persist.upgrades.ascended_courage > 0? 0.5 * data.persist.upgrades.ascended_courage * data.persist.layers.ascension : 0)
 
     return return_courage
 }
