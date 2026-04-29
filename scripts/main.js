@@ -64,6 +64,21 @@ function load_data() {
         base_data.persist = JSON.parse(localStorage.getItem("save_data"))
     }
 
+    // Migrate old upgrade names to new ones
+    const upgradeMigrations = {
+        "transcendent_research": "ascended_research",
+        "transcendent_courage": "ascended_courage",
+        "transcendent_health": "ascended_health",
+        "transcendent_defense": "ascended_defense"
+    }
+
+    for (const [oldName, newName] of Object.entries(upgradeMigrations)) {
+        if (base_data.persist.upgrades[oldName] != null) {
+            base_data.persist.upgrades[newName] = base_data.persist.upgrades[oldName]
+            delete base_data.persist.upgrades[oldName]
+        }
+    }
+
     return base_data
 }
 
@@ -1087,8 +1102,8 @@ let upgrades_list = {
             max_level: 5
         },
         {
-            id: "transcendent_research",
-            name: "Transcendent Research",
+            id: "ascended_research",
+            name: "Ascended Research",
             description: "Gain more research based on ascension count.",
             effect: {
                 amount: {
@@ -1113,8 +1128,8 @@ let upgrades_list = {
             max_level: 10
         },
         {
-            id: "transcendent_courage",
-            name: "Transcendent Courage",
+            id: "ascended_courage",
+            name: "Ascended Courage",
             description: "Gain more max courage based on ascension count.",
             effect: {
                 amount: {
@@ -1139,8 +1154,8 @@ let upgrades_list = {
             max_level: 10
         },
         {
-            id: "transcendent_health",
-            name: "Transcendent Health",
+            id: "ascended_health",
+            name: "Ascended Health",
             description: "Gain more max health based on ascension count.",
             effect: {
                 amount: {
@@ -1165,8 +1180,8 @@ let upgrades_list = {
             max_level: 10
         },
         {
-            id: "transcendent_defense",
-            name: "Transcendent Defense",
+            id: "ascended_defense",
+            name: "Ascended Defense",
             description: "Gain more defense based on ascension count.",
             effect: {
                 amount: {
@@ -1843,10 +1858,20 @@ function attempt_ascension(data) {
 
     data.persist.layers.ascension += 1
     data.persist.layers.prestige = 0
-    data.persist.currencies.ascension_points += calculate_ascension_reward(data)
+    let ascension_reward = calculate_ascension_reward(data)
+    data.persist.currencies.ascension_points += ascension_reward
+
+    let prestige_carryover = 0
+    if (data.persist.upgrades.momentum == 1) {
+        prestige_carryover = data.persist.currencies.prestige_points * 0.1
+    }
+    data.persist.currencies.prestige_points = prestige_carryover
+
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
     data.persist.other.records.floor = 0
     data.persist.layers.max_floor_this_ascension = 0
+
+    add_event_message(`Ascended! Gained ${ascension_reward.toFixed(2)} ascension points`, "success")
 
     document.getElementById("floor_record_text").innerHTML = ""
     changeupgradetab("basic")
@@ -1898,6 +1923,30 @@ function append_enemy(data, position, health, attack, defense, speed, graphic) {
     data.non_persist.run.enemies.push(enemy_table)
 }
 
+let event_log = []
+const MAX_LOG_ENTRIES = 50
+
+function add_event_message(message, type = "info") {
+    const timestamp = new Date().toLocaleTimeString();
+    event_log.unshift({ message, type, timestamp });
+
+    if (event_log.length > MAX_LOG_ENTRIES) {
+        event_log.pop();
+    }
+
+    const log_container = document.getElementById("event_log_messages");
+    const message_element = document.createElement("div");
+    message_element.className = `event_message ${type}`;
+    message_element.innerHTML = `${message}<span class="event_timestamp">${timestamp}</span>`;
+
+    log_container.insertBefore(message_element, log_container.firstChild);
+
+    // Remove old messages if too many
+    while (log_container.children.length > MAX_LOG_ENTRIES) {
+        log_container.removeChild(log_container.lastChild);
+    }
+}
+
 let last_game_tick = 0
 function start_run(data) {
     data.persist.other.runs_started += 1
@@ -1916,6 +1965,8 @@ function start_run(data) {
     document.getElementById("floor_record_text").style.display = "none"
     document.getElementById("active_run_container").style.display = "block"
     data.non_persist.run_active = true
+
+    add_event_message("Delved into the caverns", "success")
 }
 
 function end_run(data) {
@@ -1983,13 +2034,15 @@ function game_tick(data) {
                 
                 let current_health_change = calculate_health_change(data)
                 data.non_persist.run.character_stats.health = Math.min(Math.max(data.non_persist.run.character_stats.health + current_health_change / 60, 0), data.non_persist.run.character_stats.max_health)
-                
+
                 if (data.non_persist.run.character_stats.courage <= 0) {
+                    add_event_message("Ran out of courage... Fled the caverns", "danger")
                     end_run(data)
                     break
                 }
 
                 if (data.non_persist.run.character_stats.health <= 0) {
+                    add_event_message("Health depleted... Fled the caverns", "danger")
                     end_run(data)
                     break
                 }
@@ -2002,6 +2055,8 @@ function game_tick(data) {
                         data.non_persist.run.progress -= 10
                         data.non_persist.run.floor += 1
                         data.persist.layers.max_floor_this_ascension = Math.max(data.persist.layers.max_floor_this_ascension, data.non_persist.run.floor)
+
+                        add_event_message(`Entered Floor ${data.non_persist.run.floor}`, "success")
 
                         if (data.non_persist.run.floor > 2) {
                             if (data.persist.unlocks.extended_upgrades != true) {
@@ -2024,6 +2079,7 @@ function game_tick(data) {
                             data.non_persist.run.in_combat = true
                             data.non_persist.run.attack_tick = 0
                             data.non_persist.run.enemy = value
+                            add_event_message("Encountered an enemy!", "warning")
                             return
                         }
                     })
@@ -2051,6 +2107,7 @@ function game_tick(data) {
                         document.getElementById("enemy_stats_container").style.display = "none"
 
                         data.non_persist.run.enemy_kills += 1
+                        add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills)`, "success")
 
                         data.non_persist.run.in_combat = false
                         remove_enemy(data, data.non_persist.run.enemy.tile)
@@ -2110,7 +2167,7 @@ function display_tick(data) {
     document.getElementById("player_stats_container").style.display = (data.persist.other.runs_started > 0? "inline-block" : "none");
 
     if (data.persist.unlocks.prestige_upgrades == true) {
-        document.getElementById("prestige_point_display").innerHTML = "Prestige Points: " + data.persist.currencies.prestige_points.toFixed(2).toString()
+        document.getElementById("prestige_point_display").innerHTML = "Prestige Points: " + formatNumber(data.persist.currencies.prestige_points)
     }
 
     if (data.persist.unlocks.prestige == true) {
@@ -2119,7 +2176,7 @@ function display_tick(data) {
         let prestige_button = document.getElementById("prestige_button")
 
         if (prestige_available(data)) {
-            prestige_button.innerHTML = "+" + calculate_prestige_reward(data).toFixed(2).toString() + " Prestige Points"
+            prestige_button.innerHTML = "+" + formatNumber(calculate_prestige_reward(data)) + " Prestige Points"
             prestige_button.removeAttribute("disabled");
         } else {
             prestige_button.innerHTML = "Reach Floor 6"
@@ -2129,7 +2186,7 @@ function display_tick(data) {
 
     if (data.persist.unlocks.ascension == true) {
         document.getElementById("ascension_counter").innerHTML = "Ascensions: " + (data.persist.layers.ascension > 0? data.persist.layers.ascension : 0).toString()
-        document.getElementById("ascension_point_display").innerHTML = "Ascension Points: " + data.persist.currencies.ascension_points.toFixed(2).toString()
+        document.getElementById("ascension_point_display").innerHTML = "Ascension Points: " + formatNumber(data.persist.currencies.ascension_points)
 
         let ascend_button = document.getElementById("ascend_button")
 
@@ -2144,11 +2201,11 @@ function display_tick(data) {
     }
 
     if (data.persist.unlocks.transcendence == true) {
-        document.getElementById("transcendence_point_display").innerHTML = "Transcendence Points: " + data.persist.currencies.transcendence_points.toFixed(2).toString()
+        document.getElementById("transcendence_point_display").innerHTML = "Transcendence Points: " + formatNumber(data.persist.currencies.transcendence_points)
     }
 
     if (data.persist.unlocks.upgrades) {
-        document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString()
+        document.getElementById("research_display").innerHTML = "Research: " + formatNumber(data.persist.currencies.research)
         document.getElementById("currency_display").style.height = "24px";
     } else {
         document.getElementById("currency_display").style.height = "0px";
@@ -2167,7 +2224,7 @@ function display_tick(data) {
     document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString()
     if (data.non_persist.run_active) {
         let research_gain = calculate_research_gain(data)
-        document.getElementById("research_display").innerHTML = "Research: " + data.persist.currencies.research.toFixed(2).toString() + " (+" + research_gain.toFixed(2).toString() + ")"
+        document.getElementById("research_display").innerHTML = "Research: " + formatNumber(data.persist.currencies.research) + " (+" + formatNumber(research_gain) + ")"
 
         let current_courage_loss = calculate_courage_change(data)
 
@@ -2221,6 +2278,8 @@ function attempt_prestige(data) {
     data.persist.currencies.prestige_points += prestige_reward
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
     data.persist.other.records.floor = 0
+
+    add_event_message(`Prestiged! Gained ${prestige_reward.toFixed(2)} prestige points`, "success")
 
     // Unlock ascension after first prestige
     if (data.persist.layers.prestige >= 1 && data.persist.unlocks.ascension != true) {
