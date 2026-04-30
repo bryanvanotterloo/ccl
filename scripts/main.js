@@ -1756,6 +1756,9 @@ function create_upgrade_buttons(data, list, category) {
                     data.persist.upgrades[return_table.upgrade_data.id] = 1
                 }
 
+                let newLevel = data.persist.upgrades[return_table.upgrade_data.id]
+                add_event_message(`Purchased ${return_table.upgrade_data.name} (Level ${newLevel}) for ${formatNumber(cost)} ${return_table.upgrade_data.cost.currency.replace(/_/g, " ")}`, "info")
+
                 evaluate_upgrade_button(data, return_table)
             }
         })
@@ -2017,7 +2020,11 @@ function game_tick(data) {
     // Auto Shop: automatically buy cheapest available upgrade
     if (data.persist.upgrades.auto_shop == 1) {
         let cheapest_purchase = find_cheapest_upgrade(data, ["basic", "combat"])
-        auto_buy_upgrade(data, cheapest_purchase)
+        let success = auto_buy_upgrade(data, cheapest_purchase)
+        if (success && cheapest_purchase) {
+            let newLevel = data.persist.upgrades[cheapest_purchase.upgrade.id]
+            add_event_message(`Auto-purchased ${cheapest_purchase.upgrade.name} (Level ${newLevel}) for ${formatNumber(cheapest_purchase.cost)} ${cheapest_purchase.upgrade.cost.currency.replace(/_/g, " ")}`, "info")
+        }
     }
 
     if (data.non_persist.run_active == true) {
