@@ -12,6 +12,11 @@
             <div id="event_log_messages"></div>
         </div>
 
+        <div id="upgrade_stats_panel">
+            <div id="upgrade_stats_title">Upgrade Stats</div>
+            <div id="upgrade_stats_list"></div>
+        </div>
+
         <div id="main_div">
             <div id="title_div">
                 <div id="title-text" style="font-weight: bold;">
@@ -27,6 +32,7 @@
                 <button id="select_tab_upgrades" class="game_tab_select" style="display: none;" onclick="changetab('upgrades')">Upgrades</button>
                 <button id="select_tab_prestige" class="game_tab_select" style="display: block;" onclick="changetab('prestige')">Prestige</button>
                 <button id="select_tab_ascension" class="game_tab_select" style="display: none;" onclick="changetab('ascension')">Ascension</button>
+                <button id="select_tab_transcendence" class="game_tab_select" style="display: none;" onclick="changetab('transcendence')">Transcendence</button>
                 <button id="select_tab_settings" class="game_tab_select" onclick="changetab('settings')">Settings</button>
             </div>
 
@@ -118,12 +124,28 @@
 
                 <div id="tab_prestige" style="display: none;">
                     <div id="prestige_counter" style="text-align: center; font-weight: bold;">Prestige 0</div>
-                    <div id="ascension_counter" style="text-align: center; font-weight: bold; display: none;">Ascensions: 0</div>
                     <div class="seperator"></div>
                     <div style="text-align: center;">Lose everything up to this point, But start with an extra <b>0.5 Research per Prestige</b> and gain <b>Prestige Points</b> to use on Prestige Upgrades.</div>
                     <div class="seperator"></div>
                     <button id="prestige_button" disabled>Reach Floor 6 to Prestige</button>
+                </div>
+
+                <div id="tab_ascension" style="display: none;">
+                    <div id="ascension_counter" style="text-align: center; font-weight: bold; display: none;">Ascensions: 0</div>
+                    <div class="seperator"></div>
+                    <div style="text-align: center;">Lose all Research, Basic, Combat and Prestige upgrades and Prestige Points, but gain <b>Ascension Points</b> based on your furthest floor this ascension, to spend on Ascension Upgrades.</div>
+                    <div class="seperator"></div>
+                    <div id="ascension_reward_preview" style="text-align: center;"></div>
                     <button id="ascend_button" disabled style="display: none;">Ascend</button>
+                </div>
+
+                <div id="tab_transcendence" style="display: none;">
+                    <div id="transcendence_counter" style="text-align: center; font-weight: bold; display: none;">Transcendences: 0</div>
+                    <div class="seperator"></div>
+                    <div style="text-align: center;">Lose all Research, Prestige and Ascension progress and upgrades, but gain <b>Transcendence Points</b> based on your ascensions and furthest floor, to spend on Transcendence Upgrades.</div>
+                    <div class="seperator"></div>
+                    <div id="transcendence_reward_preview" style="text-align: center;"></div>
+                    <button id="transcend_button" disabled style="display: none;">Transcend</button>
                 </div>
 
                 <div id="tab_settings" style="display: none;">

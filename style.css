@@ -216,7 +216,58 @@ div > .fill_bar {
     z-index: 1000;
 }
 
-#event_log_title {
+#upgrade_stats_panel {
+    position: fixed;
+    left: 280px;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(180deg, #0a0a0d 0%, #15151a 100%);
+    border-right: 1px solid rgba(0, 217, 255, 0.2);
+    box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+#upgrade_stats_list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.upgrade_stat_row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-left: 3px solid rgba(0, 217, 255, 0.5);
+    background-color: rgba(0, 217, 255, 0.05);
+    border-radius: 4px;
+}
+
+.upgrade_stat_row > span {
+    font-size: 14px;
+}
+
+.upgrade_stat_label {
+    color: var(--text-secondary);
+}
+
+.upgrade_stat_value {
+    color: var(--accent-primary);
+    font-weight: bold;
+}
+
+.upgrade_stat_empty {
+    color: var(--text-secondary);
+    font-size: 14px;
+    text-align: center;
+}
+
+#event_log_title, #upgrade_stats_title {
     font-size: 20px;
     font-weight: bold;
     color: var(--accent-primary);
@@ -297,8 +348,8 @@ div > .fill_bar {
 #main_div {
     position: absolute;
     order: 1;
-    margin-left: calc(280px + 50% - 384px);
-    margin-right: calc(50% - 384px);
+    /* Center within the space right of the event log + stats panels (520px), with a 16px minimum gap */
+    margin-left: max(536px, calc(50% + 260px - 384px));
     width: 768px;
     border-radius: 8px;
     background-color: var(--primary-surface);
@@ -353,7 +404,7 @@ div > .fill_bar {
     padding-right: 4px;
 }
 
-#start_run_button, #prestige_button {
+#start_run_button, #prestige_button, #ascend_button, #transcend_button {
     width: 90%;
 
     height: 32px;
