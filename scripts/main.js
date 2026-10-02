@@ -27,7 +27,8 @@ function load_data() {
             layers: {
                 prestige: 0,
                 ascension: 0,
-                max_floor_this_ascension: 0
+                max_floor_this_ascension: 0,
+                transcendence: 0
             },
             other: {
                 settings: {
@@ -63,6 +64,11 @@ function load_data() {
     if (localStorage.getItem("save_data") != null) {
         base_data.persist = JSON.parse(localStorage.getItem("save_data"))
     }
+
+    // Default fields missing from older saves
+    base_data.persist.layers.transcendence ??= 0
+    base_data.persist.layers.max_floor_this_ascension ??= 0
+    base_data.persist.currencies.transcendence_points ??= 0
 
     // Migrate old upgrade names to new ones
     const upgradeMigrations = {
@@ -303,9 +309,9 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.2,
+                    value: 0.1,
                 },
-                prefix: "+",
+                prefix: "*",
                 suffix: "Move Speed"
             },
 
@@ -331,7 +337,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 15
+            max_level: 20
         },
 
         {
@@ -668,7 +674,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 5,
-                    multiplier: 1.5
+                    multiplier: 1.3
                 },
                 prefix: "",
                 suffix: "Research"
@@ -680,7 +686,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 60
         },
 
         {
@@ -991,6 +997,38 @@ let upgrades_list = {
             max_level: 30
         },
         {
+            id: "prestige_attack",
+            name: "P-Attack",
+            description: "Gain more attack power.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.5
+                },
+                prefix: "+",
+                suffix: " Attack"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 30
+        },
+        {
             id: "auto_shop",
             name: "Auto. Shop",
             description: "Automatically buy the cheapest available item from basic and combat shops.",
@@ -1024,31 +1062,6 @@ let upgrades_list = {
     ],
     ascension: [
         {
-            id: "infinite_loop",
-            name: "Infinite Loop",
-            description: "Unlock the ability to ascend multiple times.",
-            effect: {
-                amount: {
-                    type: "flat_constant",
-                    value: "Multiple Ascensions",
-                },
-                prefix: "",
-                suffix: ""
-            },
-
-            cost: {
-                currency: "ascension_points",
-                amount: {
-                    type: "flat_constant",
-                    value: 1
-                },
-                prefix: "",
-                suffix: "Ascension Points"
-            },
-
-            max_level: 1
-        },
-        {
             id: "eternal_scaling",
             name: "Eternal Scaling",
             description: "Reduce all upgrade costs over time.",
@@ -1081,7 +1094,7 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "multiply_effect",
-                    value: 1.5,
+                    value: 1,
                     multiplier: 1.5
                 },
                 prefix: "x",
@@ -1130,14 +1143,14 @@ let upgrades_list = {
         {
             id: "ascended_courage",
             name: "Ascended Courage",
-            description: "Gain more max courage based on ascension count.",
+            description: "Multiply max courage based on ascension count.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.5,
+                    value: 0.1,
                 },
                 prefix: "+",
-                suffix: "Courage (per ascension)"
+                suffix: "x Courage (per ascension)"
             },
 
             cost: {
@@ -1156,14 +1169,14 @@ let upgrades_list = {
         {
             id: "ascended_health",
             name: "Ascended Health",
-            description: "Gain more max health based on ascension count.",
+            description: "Multiply max health based on ascension count.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 1,
+                    value: 0.1,
                 },
                 prefix: "+",
-                suffix: "Health (per ascension)"
+                suffix: "x Health (per ascension)"
             },
 
             cost: {
@@ -1182,14 +1195,14 @@ let upgrades_list = {
         {
             id: "ascended_defense",
             name: "Ascended Defense",
-            description: "Gain more defense based on ascension count.",
+            description: "Multiply defense based on ascension count.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.5,
+                    value: 0.1,
                 },
                 prefix: "+",
-                suffix: "Defense (per ascension)"
+                suffix: "x Defense (per ascension)"
             },
 
             cost: {
@@ -1206,30 +1219,30 @@ let upgrades_list = {
             max_level: 10
         },
         {
-            id: "infinite_prestige_layers",
-            name: "Infinite Prestige Layers",
-            description: "Extend how deep you can prestige within each ascension.",
+            id: "ascended_attack",
+            name: "Ascended Attack",
+            description: "Multiply attack power based on ascension count.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 1,
+                    value: 0.1
                 },
                 prefix: "+",
-                suffix: "Max Prestige Layers"
+                suffix: "x Attack (per ascension)"
             },
 
             cost: {
                 currency: "ascension_points",
                 amount: {
                     type: "multiply",
-                    value: 3,
-                    multiplier: 2
+                    value: 1,
+                    multiplier: 1.25
                 },
                 prefix: "",
                 suffix: "Ascension Points"
             },
 
-            max_level: 3
+            max_level: 15
         },
         {
             id: "momentum",
@@ -1256,37 +1269,7 @@ let upgrades_list = {
 
             max_level: 1
         },
-        {
-            id: "breach_ceiling",
-            name: "Breach the Ceiling",
-            description: "Unlock the Transcendence upgrades category.",
-            effect: {
-                amount: {
-                    type: "flat_constant",
-                    value: "Unlock Transcendence",
-                },
-                prefix: "",
-                suffix: ""
-            },
 
-            cost: {
-                currency: "ascension_points",
-                amount: {
-                    type: "flat_constant",
-                    value: 10
-                },
-                prefix: "",
-                suffix: "Ascension Points"
-            },
-
-            requirements: {
-                unlocks: [
-                    "transcendence"
-                ]
-            },
-
-            max_level: 1
-        },
     ],
     transcendence: [
         {
@@ -1349,7 +1332,7 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.05,
+                    value: .05,
                 },
                 prefix: "+",
                 suffix: "% Research/s"
@@ -1392,32 +1375,6 @@ let upgrades_list = {
             },
 
             max_level: 1
-        },
-        {
-            id: "perfect_equilibrium",
-            name: "Perfect Equilibrium",
-            description: "Reduce all stat losses.",
-            effect: {
-                amount: {
-                    type: "increment",
-                    value: 0.02,
-                },
-                prefix: "-",
-                suffix: "x Stat Loss"
-            },
-
-            cost: {
-                currency: "transcendence_points",
-                amount: {
-                    type: "multiply",
-                    value: 2,
-                    multiplier: 1.5
-                },
-                prefix: "",
-                suffix: "Transcendence Points"
-            },
-
-            max_level: 10
         },
         {
             id: "cascade_reaction",
@@ -1520,6 +1477,7 @@ function find_cheapest_upgrade(data, categories) {
 
             let cost = evaluate_dynamic_amount(upgrade.cost.amount, current_level)
             cost *= (data.persist.upgrades.eternal_scaling > 0? 1 - (0.05 * data.persist.upgrades.eternal_scaling) : 1)
+            cost *= (data.persist.upgrades.cascade_reaction > 0? 1 - (0.05 * Math.min(data.persist.upgrades.cascade_reaction, 5)) : 1)
 
             if (!can_afford_upgrade(data, upgrade.cost.currency, cost)) {
                 return
@@ -1552,6 +1510,7 @@ function find_most_expensive_upgrade(data, categories) {
 
             let cost = evaluate_dynamic_amount(upgrade.cost.amount, current_level)
             cost *= (data.persist.upgrades.eternal_scaling > 0? 1 - (0.05 * data.persist.upgrades.eternal_scaling) : 1)
+            cost *= (data.persist.upgrades.cascade_reaction > 0? 1 - (0.05 * Math.min(data.persist.upgrades.cascade_reaction, 5)) : 1)
 
             if (!can_afford_upgrade(data, upgrade.cost.currency, cost)) {
                 return
@@ -1655,7 +1614,7 @@ function evaluate_upgrade_button(data, upgrade) {
         let dynamic_eval = evaluate_dynamic_amount(upgrade.upgrade_data.effect.amount, current_level)
         let upgrade_effect_text = ""
         if (typeof(dynamic_eval) == "number") {
-            upgrade_effect_text = "Effect: " + upgrade.upgrade_data.effect.prefix + dynamic_eval.toFixed(2) + " " + upgrade.upgrade_data.effect.suffix
+            upgrade_effect_text = "Effect: " + upgrade.upgrade_data.effect.prefix + formatNumber(dynamic_eval) + " " + upgrade.upgrade_data.effect.suffix
         } else {
             upgrade_effect_text = "Effect: " + upgrade.upgrade_data.effect.prefix + dynamic_eval + " " + upgrade.upgrade_data.effect.suffix
         }
@@ -1666,8 +1625,9 @@ function evaluate_upgrade_button(data, upgrade) {
         let upgrade_cost_display = upgrade.base_button.children[5]
         let upgrade_cost = evaluate_dynamic_amount(upgrade.upgrade_data.cost.amount, current_level)
         upgrade_cost *= (data.persist.upgrades.eternal_scaling > 0? 1 - (0.05 * data.persist.upgrades.eternal_scaling) : 1)
-        upgrade_cost = upgrade_cost.toFixed(2)
-        let upgrade_cost_text = upgrade.upgrade_data.cost.prefix + (-upgrade_cost) + " " + upgrade.upgrade_data.cost.suffix
+        upgrade_cost *= (data.persist.upgrades.cascade_reaction > 0? 1 - (0.05 * Math.min(data.persist.upgrades.cascade_reaction, 5)) : 1)
+        upgrade.upgrade_data.name + " cost: " + formatNumber(upgrade_cost)
+        let upgrade_cost_text = upgrade.upgrade_data.cost.prefix + "-" + formatNumber(upgrade_cost) + " " + upgrade.upgrade_data.cost.suffix
 
         if (upgrade_cost_display.innerHTML != upgrade_cost_text) {
             upgrade_cost_display.innerHTML = upgrade_cost_text
@@ -1734,7 +1694,7 @@ function create_upgrade_buttons(data, list, category) {
 
         let upgrade_cost = document.createElement("div")
         upgrade_cost.className = "upgrade_cost"
-        upgrade_cost.innerHTML = value.cost.prefix + (-evaluate_dynamic_amount(value.cost.amount, current_level).toFixed(2)) + " " + value.cost.suffix
+        upgrade_cost.innerHTML = value.cost.prefix + (-evaluate_dynamic_amount(value.cost.amount, current_level)) + " " + value.cost.suffix
         return_table.base_button.appendChild(upgrade_cost)
 
         return_table.base_button.addEventListener("click", (_self, _event) => {
@@ -1748,6 +1708,7 @@ function create_upgrade_buttons(data, list, category) {
             if (return_table.base_button.getAttribute("disabled") == null) {
                 let cost = evaluate_dynamic_amount(return_table.upgrade_data.cost.amount, evaluate_level)
                 cost *= (data.persist.upgrades.eternal_scaling > 0? 1 - (0.05 * data.persist.upgrades.eternal_scaling) : 1)
+                cost *= (data.persist.upgrades.cascade_reaction > 0? 1 - (0.05 * Math.min(data.persist.upgrades.cascade_reaction, 5)) : 1)
                 data.persist.currencies[return_table.upgrade_data.cost.currency] -= cost
 
                 if (data.persist.upgrades[return_table.upgrade_data.id] != null) {
@@ -1762,12 +1723,13 @@ function create_upgrade_buttons(data, list, category) {
                 evaluate_upgrade_button(data, return_table)
             }
         })
-
         upgrade_buttons.push(return_table)
         document.getElementById("upgrade_container_" + category).appendChild(return_table.base_button)
 
         evaluate_upgrade_button(data, return_table)
     })
+
+    
 }
 
 function changetab(tab_name) {
@@ -1823,6 +1785,10 @@ function ascension_available(data) {
     if (data.persist.currencies.prestige_points < 10) {
         return false
     }
+    let max_ascensions = 10 + (data.persist.upgrades.beyond_infinity > 0 ? Math.min(data.persist.upgrades.beyond_infinity, 3) : 0)
+    if (data.persist.layers.ascension >= max_ascensions) {
+        return false
+    }
     return true
 }
 
@@ -1852,7 +1818,6 @@ function attempt_ascension(data) {
     data.persist.unlocks.combat = false;
     data.persist.unlocks.extended_upgrades = false;
     data.persist.unlocks.prestige = false;
-    data.persist.unlocks.prestige_upgrades = false;
     data.persist.unlocks.ascension = true;
 
     if (data.non_persist.run_active == true) {
@@ -1868,6 +1833,13 @@ function attempt_ascension(data) {
     if (data.persist.upgrades.momentum == 1) {
         prestige_carryover = data.persist.currencies.prestige_points * 0.1
     }
+    if (data.persist.prestige_points > 0) {
+        data.persist.unlocks.prestige_upgrades = true;
+    }
+    else
+    {
+        data.persist.unlocks.prestige_upgrades = false;
+    }
     data.persist.currencies.prestige_points = prestige_carryover
 
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
@@ -1875,6 +1847,77 @@ function attempt_ascension(data) {
     data.persist.layers.max_floor_this_ascension = 0
 
     add_event_message(`Ascended! Gained ${ascension_reward.toFixed(2)} ascension points`, "success")
+
+    document.getElementById("floor_record_text").innerHTML = ""
+    changeupgradetab("basic")
+}
+
+function transcendence_available(data) {
+    if (data.persist.unlocks.transcendence != true) {
+        return false
+    }
+    if (data.persist.other.records.floor < 30) {
+        return false
+    }
+    return true
+}
+
+function attempt_transcendence(data) {
+    if (transcendence_available(data) != true) {
+        return
+    }
+
+    upgrades_list.basic.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    upgrades_list.combat.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    upgrades_list.prestige.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    upgrades_list.ascension.forEach((value, _index, _array) => {
+        if (data.persist.upgrades[value.id] != null) {
+            data.persist.upgrades[value.id] = null
+        }
+    })
+
+    data.persist.unlocks.combat = false;
+    data.persist.unlocks.extended_upgrades = false;
+    data.persist.unlocks.prestige = false;
+    data.persist.unlocks.ascension = false;
+    data.persist.unlocks.prestige_upgrades = false;
+    data.persist.unlocks.transcendence = true;
+
+    if (data.non_persist.run_active == true) {
+        end_run(data)
+    }
+
+    // Calculate before resetting layers, since the reward depends on ascension count and max floor
+    let transcendence_reward = calculate_transcendence_reward(data)
+    data.persist.currencies.transcendence_points += transcendence_reward
+
+    data.persist.layers.transcendence += 1
+    data.persist.layers.ascension = 0
+    data.persist.layers.prestige = 0
+
+
+    data.persist.currencies.ascension_points = 0
+    data.persist.currencies.prestige_points = 0
+    data.persist.currencies.research = 0
+    data.persist.other.records.floor = 0
+    data.persist.layers.max_floor_this_ascension = 0
+
+    add_event_message(`Transcended! Gained ${transcendence_reward.toFixed(2)} transcendence points`, "success")
 
     document.getElementById("floor_record_text").innerHTML = ""
     changeupgradetab("basic")
@@ -1950,6 +1993,19 @@ function add_event_message(message, type = "info") {
     }
 }
 
+// Snap skips the CSS slide, so moving back to the start of the strip doesn't animate across it
+function set_player_progress(progress, snap) {
+    let player_icon = document.getElementById("run_player_icon")
+    if (snap) {
+        player_icon.style.transition = "none"
+    }
+    player_icon.style.setProperty("--progress", progress)
+    if (snap) {
+        void player_icon.offsetWidth // force reflow so the jump applies without animating
+        player_icon.style.transition = ""
+    }
+}
+
 let last_game_tick = 0
 function start_run(data) {
     data.persist.other.runs_started += 1
@@ -1963,7 +2019,7 @@ function start_run(data) {
     data.non_persist.run.progress = 0
     last_game_tick = 0
 
-    document.getElementById("run_player_icon").style.setProperty("--progress", data.non_persist.run.progress)
+    set_player_progress(data.non_persist.run.progress, true)
 
     document.getElementById("floor_record_text").style.display = "none"
     document.getElementById("active_run_container").style.display = "block"
@@ -2017,6 +2073,12 @@ function game_tick(data) {
         data.persist.currencies.transcendence_points += data.persist.currencies.prestige_points * 0.001 * time_elapsed
     }
 
+    // Dimensional Echo: +0.05% research per second per level (max 5), only while in a run
+    if (data.non_persist.run_active && data.persist.upgrades.dimensional_echo > 0 && data.persist.currencies.research > 0 && data.persist.currencies.research < 1e100) {
+        let echo_multiplier = Math.min(data.persist.upgrades.dimensional_echo, 5) * 0.0005
+        data.persist.currencies.research += data.persist.currencies.research * echo_multiplier * time_elapsed
+    }
+
     // Auto Shop: automatically buy cheapest available upgrade
     if (data.persist.upgrades.auto_shop == 1) {
         let cheapest_purchase = find_cheapest_upgrade(data, ["basic", "combat"])
@@ -2037,7 +2099,8 @@ function game_tick(data) {
                 data.non_persist.run.move_tick += calculate_move_speed(data) / 60
 
                 let current_courage_loss = calculate_courage_change(data)
-                data.non_persist.run.character_stats.courage = Math.min(Math.max(data.non_persist.run.character_stats.courage + current_courage_loss / 60, 0), data.non_persist.run.character_stats.max_courage)
+                let courage_floor = data.persist.upgrades.courage_nexus >= 1 ? 0.01 : 0
+                data.non_persist.run.character_stats.courage = Math.min(Math.max(data.non_persist.run.character_stats.courage + current_courage_loss / 60, courage_floor), data.non_persist.run.character_stats.max_courage)
                 
                 let current_health_change = calculate_health_change(data)
                 data.non_persist.run.character_stats.health = Math.min(Math.max(data.non_persist.run.character_stats.health + current_health_change / 60, 0), data.non_persist.run.character_stats.max_health)
@@ -2065,7 +2128,7 @@ function game_tick(data) {
 
                         add_event_message(`Entered Floor ${data.non_persist.run.floor}`, "success")
 
-                        if (data.non_persist.run.floor > 2) {
+                        if (data.non_persist.run.floor > 2 || data.non_persist.prestige_points > 0) {
                             if (data.persist.unlocks.extended_upgrades != true) {
                                 data.persist.unlocks.extended_upgrades = true
                             }
@@ -2074,7 +2137,13 @@ function game_tick(data) {
                             }
                         }
 
-                        append_enemy(data, 1, 1 * Math.pow(2, (data.non_persist.run.floor - 1) / 1.2), Math.floor(Math.pow(2, (data.non_persist.run.floor - 1) / 1.67)), Math.floor((data.non_persist.run.floor - 1) / 4), 1, enemy_graphic_order[(data.non_persist.run.floor - 1) % enemy_graphic_order.length])
+                        if (data.non_persist.run.floor >= 30) {
+                            if (data.persist.unlocks.transcendence != true) {
+                                data.persist.unlocks.transcendence = true
+                            }
+                        }
+
+                        append_enemy(data, 1, 2 * Math.pow(1.5, (data.non_persist.run.floor - 1)), 1 * Math.pow(1.3, (data.non_persist.run.floor - 1)), Math.floor((data.non_persist.run.floor - 1) / 5), 1, enemy_graphic_order[(data.non_persist.run.floor - 1) % enemy_graphic_order.length])
                     }
                     
                     data.non_persist.run.enemies.forEach((value, _index, _array) => {
@@ -2090,7 +2159,7 @@ function game_tick(data) {
                             return
                         }
                     })
-                    document.getElementById("run_player_icon").style.setProperty("--progress", data.non_persist.run.progress)
+                    set_player_progress(data.non_persist.run.progress, data.non_persist.run.progress == 0)
                 }
 
                 if (data.non_persist.run.in_combat) {
@@ -2114,7 +2183,12 @@ function game_tick(data) {
                         document.getElementById("enemy_stats_container").style.display = "none"
 
                         data.non_persist.run.enemy_kills += 1
-                        add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills)`, "success")
+
+                        let stats = data.non_persist.run.character_stats
+                        let courage_gained = Math.min(stats.max_courage * 0.05, stats.max_courage - stats.courage)
+                        stats.courage += courage_gained
+
+                        add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills) +${formatNumber(courage_gained)} Courage`, "success")
 
                         data.non_persist.run.in_combat = false
                         remove_enemy(data, data.non_persist.run.enemy.tile)
@@ -2142,10 +2216,37 @@ function game_tick(data) {
     }
 }
 
+function format_stat_value(num) {
+    if (num != 0 && Math.abs(num) < 0.01) {
+        return num.toPrecision(3)
+    }
+    return formatNumber(num)
+}
+
+function update_upgrade_stats_panel(data) {
+    let stats = calculate_upgrade_stats(data)
+    let stats_html = ""
+
+    if (stats.length == 0) {
+        stats_html = '<div class="upgrade_stat_empty">No upgrades yet</div>'
+    }
+
+    stats.forEach((stat) => {
+        stats_html += '<div class="upgrade_stat_row"><span class="upgrade_stat_label">' + stat.label + '</span><span class="upgrade_stat_value">' + stat.prefix + format_stat_value(stat.value) + stat.suffix + '</span></div>'
+    })
+
+    let stats_list = document.getElementById("upgrade_stats_list")
+    if (stats_list.innerHTML != stats_html) {
+        stats_list.innerHTML = stats_html
+    }
+}
+
 function display_tick(data) {
     upgrade_buttons.forEach((value, _index, _array) => {
         evaluate_upgrade_button(data, value)
     })
+
+    update_upgrade_stats_panel(data)
 
     document.getElementById("font_switcher").innerHTML = (data.persist.other.settings.cool_font == true? "Charm (Default)" : "Monospace")
     document.getElementById("hide_upgrade_switch").innerHTML = (data.persist.other.settings.hide_complete_upgrades == true? "Yes" : "No")
@@ -2164,9 +2265,15 @@ function display_tick(data) {
 
     document.getElementById("select_tab_ascension").style.display = (data.persist.unlocks.ascension == true? "block" : "none");
 
+    document.getElementById("select_tab_transcendence").style.display = (data.persist.unlocks.transcendence == true? "block" : "none");
+
     document.getElementById("ascend_button").style.display = (data.persist.unlocks.ascension == true? "block" : "none");
     document.getElementById("ascension_counter").style.display = (data.persist.unlocks.ascension == true? "block" : "none");
     document.getElementById("ascension_point_display").style.display = (data.persist.unlocks.ascension == true? "block" : "none");
+
+    document.getElementById("transcend_button").style.display = (data.persist.unlocks.transcendence == true? "block" : "none");
+    document.getElementById("transcendence_counter").style.display = (data.persist.unlocks.transcendence == true? "block" : "none");
+    document.getElementById("transcendence_point_display").style.display = (data.persist.unlocks.transcendence == true? "block" : "none");
 
     document.getElementById("upgrade_tab_prestige").style.display = (data.persist.unlocks.prestige_upgrades == true? "block" : "none");
     document.getElementById("upgrade_tab_combat").style.display = (data.persist.unlocks.combat == true? "block" : "none");
@@ -2196,9 +2303,16 @@ function display_tick(data) {
         document.getElementById("ascension_point_display").innerHTML = "Ascension Points: " + formatNumber(data.persist.currencies.ascension_points)
 
         let ascend_button = document.getElementById("ascend_button")
+        let ascension_reward = calculate_ascension_reward(data) || 0
+
+        let reward_preview_text = "You will gain " + formatNumber(ascension_reward) + " Ascension Points (Furthest floor this ascension: " + (data.persist.layers.max_floor_this_ascension || 0) + ")"
+        if (ascension_reward <= 0) {
+            reward_preview_text += " (reach floor 4 for your first point)"
+        }
+        document.getElementById("ascension_reward_preview").innerHTML = reward_preview_text
 
         if (ascension_available(data)) {
-            ascend_button.innerHTML = "Ascend"
+            ascend_button.innerHTML = "Ascend for +" + formatNumber(ascension_reward) + " Ascension Points"
             ascend_button.removeAttribute("disabled");
         } else {
             let prestige_needed = Math.max(0, 10 - data.persist.currencies.prestige_points)
@@ -2208,7 +2322,22 @@ function display_tick(data) {
     }
 
     if (data.persist.unlocks.transcendence == true) {
+        document.getElementById("transcendence_counter").innerHTML = "Transcendences: " + (data.persist.layers.transcendence > 0? data.persist.layers.transcendence : 0).toString()
         document.getElementById("transcendence_point_display").innerHTML = "Transcendence Points: " + formatNumber(data.persist.currencies.transcendence_points)
+
+        let transcend_button = document.getElementById("transcend_button")
+        let transcendence_reward = calculate_transcendence_reward(data)
+
+        document.getElementById("transcendence_reward_preview").innerHTML = "You will gain " + formatNumber(transcendence_reward) + " Transcendence Points (Ascensions: " + (data.persist.layers.ascension || 0) + ", Furthest floor this ascension: " + (data.persist.layers.max_floor_this_ascension || 0) + ")"
+
+        if (transcendence_available(data)) {
+            transcend_button.innerHTML = "Transcend for +" + formatNumber(transcendence_reward) + " Transcendence Points"
+            transcend_button.removeAttribute("disabled");
+        } else {
+            let floor_needed = Math.max(0, 30 - data.persist.other.records.floor)
+            transcend_button.innerHTML = "Reach Floor 30 to Transcend (" + floor_needed + " more)"
+            transcend_button.setAttribute("disabled", "hi");
+        }
     }
 
     if (data.persist.unlocks.upgrades) {
@@ -2223,33 +2352,33 @@ function display_tick(data) {
     document.getElementById("player_defense").style.display = (data.persist.unlocks.combat? "block" : "none");
     document.getElementById("player_attack_speed").style.display = (data.persist.unlocks.combat? "block" : "none");
 
-    document.getElementById("player_attack").innerHTML = "Attack: " + calculate_attack(data).toFixed(1).toString()
-    document.getElementById("player_defense").innerHTML = "Defense: " + calculate_defense(data).toFixed(1).toString()
-    document.getElementById("player_attack_speed").innerHTML = "Attack Speed: " + calculate_attack_speed(data).toFixed(2).toString() + "x"
-    document.getElementById("player_speed").innerHTML = "Move Speed: " + calculate_move_speed(data).toFixed(2).toString() + "x"
+    document.getElementById("player_attack").innerHTML = "Attack: " + formatNumber(calculate_attack(data))
+    document.getElementById("player_defense").innerHTML = "Defense: " + formatNumber(calculate_defense(data))
+    document.getElementById("player_attack_speed").innerHTML = "Attack Speed: " + formatNumber(calculate_attack_speed(data)) + "x"
+    document.getElementById("player_speed").innerHTML = "Move Speed: " + formatNumber(calculate_move_speed(data)) + "x"
 
-    document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString()
+    document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + formatNumber(data.non_persist.run.character_stats.courage)  + "/" + formatNumber(data.non_persist.run.character_stats.max_courage)
     if (data.non_persist.run_active) {
         let research_gain = calculate_research_gain(data)
         document.getElementById("research_display").innerHTML = "Research: " + formatNumber(data.persist.currencies.research) + " (+" + formatNumber(research_gain) + ")"
 
         let current_courage_loss = calculate_courage_change(data)
 
-        document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + data.non_persist.run.character_stats.courage.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_courage.toFixed(0).toString() + " (" + current_courage_loss.toFixed(2).toString() + "/s)"
+        document.querySelector("#courage_bar > .bar_text").innerHTML = "Courage: " + formatNumber(data.non_persist.run.character_stats.courage)  + "/" + formatNumber(data.non_persist.run.character_stats.max_courage) + " (" + formatNumber(current_courage_loss) + "/s)"
     }
     
     document.querySelector("#courage_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage)
 
-    document.querySelector("#health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.character_stats.health.toFixed(1).toString()  + "/" + data.non_persist.run.character_stats.max_health.toFixed(1).toString()
+    document.querySelector("#health_bar > .bar_text").innerHTML = "Health: " + formatNumber(data.non_persist.run.character_stats.health)  + "/" + formatNumber(data.non_persist.run.character_stats.max_health)
     document.querySelector("#health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.character_stats.health / data.non_persist.run.character_stats.max_health)
 
     document.getElementById("enemy_stats_container").style.display = (data.non_persist.run.in_combat? "inline-block" : "none");
     if (data.non_persist.run.enemy) {
-        document.getElementById("enemy_attack").innerHTML = "Attack: " + data.non_persist.run.enemy.stats.attack.toFixed(1).toString()
-        document.getElementById("enemy_defense").innerHTML = "Defense: " + data.non_persist.run.enemy.stats.defense.toFixed(1).toString()
-        document.getElementById("enemy_speed").innerHTML = "Attack Speed: " + data.non_persist.run.enemy.stats.speed.toFixed(2).toString() + "x"
+        document.getElementById("enemy_attack").innerHTML = "Attack: " + formatNumber(data.non_persist.run.enemy.stats.attack)
+        document.getElementById("enemy_defense").innerHTML = "Defense: " + formatNumber(data.non_persist.run.enemy.stats.defense)
+        document.getElementById("enemy_speed").innerHTML = "Attack Speed: " + formatNumber(data.non_persist.run.enemy.stats.speed) + "x"
 
-        document.querySelector("#enemy_health_bar > .bar_text").innerHTML = "Health: " + data.non_persist.run.enemy.stats.health.toFixed(1).toString()  + "/" + data.non_persist.run.enemy.stats.max_health.toFixed(1).toString()
+        document.querySelector("#enemy_health_bar > .bar_text").innerHTML = "Health: " + formatNumber(data.non_persist.run.enemy.stats.health)  + "/" + formatNumber(data.non_persist.run.enemy.stats.max_health)
         document.querySelector("#enemy_health_bar > .fill_bar").style.setProperty("--percent", data.non_persist.run.enemy.stats.health / data.non_persist.run.enemy.stats.max_health)
     }
 }
@@ -2281,7 +2410,6 @@ function attempt_prestige(data) {
 
     data.persist.layers.prestige += 1
     let prestige_reward = calculate_prestige_reward(data)
-    prestige_reward *= (data.persist.upgrades.paradox_engine > 0? Math.pow(1.5, data.persist.upgrades.paradox_engine) : 1)
     data.persist.currencies.prestige_points += prestige_reward
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
     data.persist.other.records.floor = 0
@@ -2326,6 +2454,7 @@ function start() {
 
     if (data.persist.unlocks.transcendence == true) {
         document.getElementById("upgrade_tab_transcendence").style.display = "block";
+        document.getElementById("select_tab_transcendence").style.display = "block";
         document.getElementById("transcendence_point_display").style.display = "block";
     }
 
@@ -2356,6 +2485,10 @@ function start() {
 
     document.getElementById("ascend_button").addEventListener("click", (_self, _event) => {
         attempt_ascension(data)
+    })
+
+    document.getElementById("transcend_button").addEventListener("click", (_self, _event) => {
+        attempt_transcendence(data)
     })
 
     document.getElementById("font_switcher").addEventListener("click", (_self, _event) => {
