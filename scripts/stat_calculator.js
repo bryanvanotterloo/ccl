@@ -306,7 +306,7 @@ function calculate_upgrade_stats(data) {
     add_multiplier("Max Health", calculate_health(data) / 5)
     add_flat("Health Regen", (upgrades.slow_recover > 0? 0.125 * Math.pow(1.5, upgrades.slow_recover) : 0) + (upgrades.well_cheers > 0? 0.05 * upgrades.well_cheers : 0), "/s")
     add_multiplier("Attack", calculate_attack(data))
-    add_flat("Defense", calculate_defense(data))
+    add_multiplier("Defense", calculate_defense(data))
     add_multiplier("Attack Speed", calculate_attack_speed(data))
     add_multiplier("Move Speed", 1 + (upgrades.combat_boots > 0? 0.1 * upgrades.combat_boots : 0))
 
@@ -315,7 +315,7 @@ function calculate_upgrade_stats(data) {
         add_multiplier("Panic Pace (max)", 1 + 0.1 * upgrades.growing_pace)
         if (data.non_persist.run_active) {
             let courage_ratio = data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage
-            stats.push({ label: "Panic Pace (now)", prefix: "x", value: 1 + 0.1 * upgrades.growing_pace * (1 - courage_ratio), suffix: "" })
+            stats.push({ label: "Panic Pace (now)", prefix: "x", value: 1 + 0.1 * upgrades.growing_pace * (courage_ratio), suffix: "" })
         }
     }
 
