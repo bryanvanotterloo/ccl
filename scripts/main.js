@@ -337,7 +337,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 20
+            max_level: 40
         },
 
         {
