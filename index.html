@@ -154,6 +154,19 @@
                     </div>
                     <div style="text-align: center;"><button id="reset_data_button">Reset Data (10)</button></div>
                     <br>
+                    <div id="save_transfer">
+                        <div style="text-align: center;">Save Data</div>
+                        <textarea id="save_data_text" rows="4" spellcheck="false" placeholder="Click Export to get your save code, or paste a save code here and click Import."></textarea>
+                        <div class="save_transfer_buttons">
+                            <button id="export_save_button">Export</button>
+                            <button id="download_save_button">Download File</button>
+                            <button id="import_save_button">Import</button>
+                            <button id="upload_save_button">Load File</button>
+                            <input id="save_file_input" type="file" accept=".txt,.json" style="display: none;">
+                        </div>
+                        <div id="save_transfer_status" style="text-align: center;"></div>
+                    </div>
+                    <br>
                     <div style="text-align: center;">
                         Font: <button id="font_switcher">Charm (Default)</button>
                     </div>

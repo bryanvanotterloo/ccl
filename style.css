@@ -61,6 +61,32 @@ button:disabled {
     cursor: not-allowed;
 }
 
+#save_transfer textarea {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    resize: vertical;
+    font-family: monospace;
+    font-size: 14px;
+    word-break: break-all;
+    background-color: var(--primary-surface);
+    border: 1px solid rgba(0, 217, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.save_transfer_buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+#save_transfer_status[data-error=true] {
+    color: var(--accent-secondary);
+}
+
 img { 
     image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
     image-rendering: -moz-crisp-edges;          /* Firefox                        */
