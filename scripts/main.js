@@ -88,6 +88,55 @@ function load_data() {
     return base_data
 }
 
+// Save codes are the persist data as base64-encoded JSON
+function encode_save(persist) {
+    let bytes = new TextEncoder().encode(JSON.stringify(persist))
+    let binary = ""
+    bytes.forEach((b) => binary += String.fromCharCode(b))
+    return btoa(binary)
+}
+
+// Returns the decoded persist data, or throws if the code isn't a valid save
+function decode_save(code) {
+    code = code.trim()
+    let json = code
+    if (!code.startsWith("{")) {
+        let binary = atob(code.replace(/\s/g, ""))
+        json = new TextDecoder().decode(Uint8Array.from(binary, (c) => c.charCodeAt(0)))
+    }
+
+    let persist = JSON.parse(json)
+    for (const key of ["currencies", "upgrades", "unlocks", "layers", "other"]) {
+        if (persist == null || typeof persist[key] != "object" || persist[key] == null) {
+            throw new Error("missing " + key)
+        }
+    }
+    return persist
+}
+
+function set_save_transfer_status(text, is_error) {
+    let status = document.getElementById("save_transfer_status")
+    status.innerHTML = text
+    status.dataset.error = is_error
+}
+
+function import_save(code) {
+    let persist
+    try {
+        persist = decode_save(code)
+    } catch (e) {
+        set_save_transfer_status("That doesn't look like a valid save code.", true)
+        return
+    }
+
+    if (!confirm("Importing will overwrite your current progress. Continue?")) {
+        return
+    }
+
+    localStorage.setItem("save_data", JSON.stringify(persist))
+    window.location.reload()
+}
+
 let enemy_graphic_order = [
     "images/enemy_zombie_icon.png",
     "images/enemy_slime_icon.png",
@@ -2277,6 +2326,8 @@ function display_tick(data) {
 
     document.getElementById("upgrade_tab_prestige").style.display = (data.persist.unlocks.prestige_upgrades == true? "block" : "none");
     document.getElementById("upgrade_tab_combat").style.display = (data.persist.unlocks.combat == true? "block" : "none");
+    document.getElementById("upgrade_tab_ascension").style.display = (data.persist.unlocks.ascension == true? "block" : "none");
+    document.getElementById("upgrade_tab_transcendence").style.display = (data.persist.unlocks.transcendence == true? "block" : "none");
 
     document.getElementById("player_stats_container").style.display = (data.persist.other.runs_started > 0? "inline-block" : "none");
 
@@ -2476,6 +2527,46 @@ function start() {
             end_run(data)
             localStorage.removeItem("save_data")
             window.location.reload()
+        }
+    })
+
+    let save_text = document.getElementById("save_data_text")
+
+    document.getElementById("export_save_button").addEventListener("click", (_self, _event) => {
+        save_text.value = encode_save(data.persist)
+        save_text.select()
+        set_save_transfer_status("Save code exported. Copy it from the box above.", false)
+        navigator.clipboard?.writeText(save_text.value).then(
+            () => set_save_transfer_status("Save code copied to clipboard.", false),
+            () => set_save_transfer_status("Save code exported. Copy it from the box above.", false)
+        )
+    })
+
+    document.getElementById("download_save_button").addEventListener("click", (_self, _event) => {
+        let blob = new Blob([encode_save(data.persist)], { type: "text/plain" })
+        let link = document.createElement("a")
+        link.href = URL.createObjectURL(blob)
+        link.download = "ccl_save_" + new Date().toISOString().slice(0, 10) + ".txt"
+        link.click()
+        URL.revokeObjectURL(link.href)
+        set_save_transfer_status("Save file downloaded.", false)
+    })
+
+    document.getElementById("import_save_button").addEventListener("click", (_self, _event) => {
+        import_save(save_text.value)
+    })
+
+    let file_input = document.getElementById("save_file_input")
+
+    document.getElementById("upload_save_button").addEventListener("click", (_self, _event) => {
+        file_input.click()
+    })
+
+    file_input.addEventListener("change", async (_event) => {
+        let file = file_input.files[0]
+        file_input.value = ""
+        if (file) {
+            import_save(await file.text())
         }
     })
 
