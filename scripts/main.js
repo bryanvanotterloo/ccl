@@ -85,6 +85,12 @@ function load_data() {
         }
     }
 
+    // Courage Nexus was removed; refund its cost
+    if (base_data.persist.upgrades.courage_nexus > 0) {
+        base_data.persist.currencies.transcendence_points += 5
+    }
+    delete base_data.persist.upgrades.courage_nexus
+
     return base_data
 }
 
@@ -1401,31 +1407,6 @@ let upgrades_list = {
             max_level: 5
         },
         {
-            id: "courage_nexus",
-            name: "Courage Nexus",
-            description: "Courage never fully depletes (quality of life).",
-            effect: {
-                amount: {
-                    type: "flat_constant",
-                    value: "Courage Floor: 0.01",
-                },
-                prefix: "",
-                suffix: ""
-            },
-
-            cost: {
-                currency: "transcendence_points",
-                amount: {
-                    type: "flat_constant",
-                    value: 5
-                },
-                prefix: "",
-                suffix: "Transcendence Points"
-            },
-
-            max_level: 1
-        },
-        {
             id: "cascade_reaction",
             name: "Cascade Reaction",
             description: "Upgrade cost reductions stack multiplicatively.",
@@ -2148,8 +2129,7 @@ function game_tick(data) {
                 data.non_persist.run.move_tick += calculate_move_speed(data) / 60
 
                 let current_courage_loss = calculate_courage_change(data)
-                let courage_floor = data.persist.upgrades.courage_nexus >= 1 ? 0.01 : 0
-                data.non_persist.run.character_stats.courage = Math.min(Math.max(data.non_persist.run.character_stats.courage + current_courage_loss / 60, courage_floor), data.non_persist.run.character_stats.max_courage)
+                data.non_persist.run.character_stats.courage = Math.min(Math.max(data.non_persist.run.character_stats.courage + current_courage_loss / 60, 0), data.non_persist.run.character_stats.max_courage)
                 
                 let current_health_change = calculate_health_change(data)
                 data.non_persist.run.character_stats.health = Math.min(Math.max(data.non_persist.run.character_stats.health + current_health_change / 60, 0), data.non_persist.run.character_stats.max_health)
