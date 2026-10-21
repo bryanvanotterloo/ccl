@@ -84,6 +84,9 @@ function calculate_health(data) {
 
     return_health *= (data.persist.upgrades.ascended_health > 0? 1 + (0.1 * data.persist.upgrades.ascended_health * data.persist.layers.ascension) : 1)
 
+    // Transcendent Might
+    return_health *= calculate_transcendent_might(data)
+
     // Ascendant Form
     return_health *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
 
@@ -127,6 +130,9 @@ function calculate_attack(data) {
     // Ascension Attack
     return_attack *= (data.persist.upgrades.ascended_attack > 0? 1 + (0.1 * data.persist.upgrades.ascended_attack * data.persist.layers.ascension) : 1)
 
+    // Transcendent Might
+    return_attack *= calculate_transcendent_might(data)
+
     // Ascendant Form
     return_attack *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
 
@@ -139,10 +145,34 @@ function calculate_attack_speed(data) {
     // Agility Training
     return_attack_speed += (data.persist.upgrades.train_agility > 0? (0.1 * data.persist.upgrades.train_agility) : 0)
 
+    // P-Agility
+    return_attack_speed += (data.persist.upgrades.prestige_agility > 0? (0.1 * data.persist.upgrades.prestige_agility) : 0)
+
+    // Ascended Vigor
+    return_attack_speed *= (data.persist.upgrades.ascended_vigor > 0? 1 + (0.05 * data.persist.upgrades.ascended_vigor * data.persist.layers.ascension) : 1)
+
     // Ascendant Form
     return_attack_speed *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
 
     return return_attack_speed
+}
+
+function calculate_move_speed_multiplier(data) {
+    let multiplier = 1
+
+    multiplier *= (data.persist.upgrades.cartography > 0? 1 + 0.05 * data.persist.upgrades.cartography : 1)
+    multiplier *= (data.persist.upgrades.prestige_speed > 0? 1 + 0.1 * data.persist.upgrades.prestige_speed : 1)
+    multiplier *= (data.persist.upgrades.ascended_speed > 0? 1 + (0.1 * data.persist.upgrades.ascended_speed * data.persist.layers.ascension) : 1)
+
+    return multiplier
+}
+
+function calculate_transcendent_might(data) {
+    return (data.persist.upgrades.transcendent_might > 0? 1 + (0.25 * data.persist.upgrades.transcendent_might * data.persist.layers.transcendence) : 1)
+}
+
+function calculate_crit_chance(data) {
+    return (data.persist.upgrades.critical_strike > 0? 0.05 * data.persist.upgrades.critical_strike : 0)
 }
 
 function calculate_move_speed(data) {
@@ -164,6 +194,9 @@ function calculate_move_speed(data) {
         base_move_speed *= courage_scaled_multiplier
     }
     
+    // Cartography, P-Speed, Ascended Speed - MULTIPLICATIVE
+    base_move_speed *= calculate_move_speed_multiplier(data)
+
     //Ascendant Form - MULTIPLICATIVE
     base_move_speed *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
     
@@ -174,6 +207,9 @@ function calculate_research_gain(data) {
     let run_data = data.non_persist.run
 
     let base_research_gain = (run_data.floor - 1) + run_data.progress / 10
+
+    // Lucky Find
+    base_research_gain += (data.persist.upgrades.lucky_find > 0? 0.25 * data.persist.upgrades.lucky_find * (run_data.floor - 1) : 0)
 
     // Careful Looking
     base_research_gain *= (data.persist.upgrades.careful_looking > 0? 1 + 0.2 * data.persist.upgrades.careful_looking : 1)
@@ -186,6 +222,9 @@ function calculate_research_gain(data) {
     base_research_gain *= (data.persist.upgrades.prestige_research > 0? 1 + 0.5 * data.persist.upgrades.prestige_research : 1)
 
     base_research_gain *= (data.persist.upgrades.ascended_research > 0? 1 + (0.5 * data.persist.upgrades.ascended_research * data.persist.layers.ascension) : 1)
+
+    // Timeless Knowledge
+    base_research_gain *= (data.persist.upgrades.timeless_knowledge > 0? 1 + data.persist.upgrades.timeless_knowledge : 1)
 
     return base_research_gain
 }
@@ -258,6 +297,9 @@ function calculate_prestige_reward(data) {
 function calculate_ascension_reward(data) {
     let floor_bonus = Math.floor((data.persist.layers.max_floor_this_ascension - 1) / 3)
 
+    // Ascended Insight
+    floor_bonus *= (data.persist.upgrades.ascended_insight > 0? 1 + 0.1 * data.persist.upgrades.ascended_insight : 1)
+
     return floor_bonus
 }
 
@@ -292,7 +334,9 @@ function calculate_upgrade_stats(data) {
     research_multiplier *= (upgrades.careful_looking > 0? 1 + 0.2 * upgrades.careful_looking : 1)
     research_multiplier *= (upgrades.prestige_research > 0? 1 + 0.5 * upgrades.prestige_research : 1)
     research_multiplier *= (upgrades.ascended_research > 0? 1 + (0.5 * upgrades.ascended_research * data.persist.layers.ascension) : 1)
+    research_multiplier *= (upgrades.timeless_knowledge > 0? 1 + upgrades.timeless_knowledge : 1)
     add_multiplier("Research Gain", research_multiplier)
+    add_flat("Flat Research / Floor", (upgrades.lucky_find > 0? 0.25 * upgrades.lucky_find : 0))
 
     // Compounding Discoveries: +10% research per level per floor reached this run
     if (upgrades.compound_research > 0) {
@@ -308,7 +352,11 @@ function calculate_upgrade_stats(data) {
     add_multiplier("Attack", calculate_attack(data))
     add_multiplier("Defense", calculate_defense(data))
     add_multiplier("Attack Speed", calculate_attack_speed(data))
-    add_multiplier("Move Speed", 1 + (upgrades.combat_boots > 0? 0.1 * upgrades.combat_boots : 0))
+    add_multiplier("Move Speed", (1 + (upgrades.combat_boots > 0? 0.1 * upgrades.combat_boots : 0)) * calculate_move_speed_multiplier(data))
+    add_flat("Crit Chance", 100 * calculate_crit_chance(data), "%")
+    add_flat("Courage / Floor", (upgrades.second_wind > 0? 2 * upgrades.second_wind : 0), "%")
+    add_flat("Courage / Kill", (upgrades.trophy_hunter > 0? upgrades.trophy_hunter : 0), "%")
+    add_flat("Health / Kill", (upgrades.bloodlust > 0? 3 * upgrades.bloodlust : 0), "%")
 
     // Panicked Pace: move speed scales up as courage drops, maxing out at 0 courage
     if (upgrades.growing_pace > 0) {
@@ -320,6 +368,7 @@ function calculate_upgrade_stats(data) {
     }
 
     add_multiplier("Prestige Gain", (upgrades.paradox_engine > 0? Math.pow(1.5, upgrades.paradox_engine) : 1))
+    add_multiplier("Ascension Gain", (upgrades.ascended_insight > 0? 1 + 0.1 * upgrades.ascended_insight : 1))
 
     let cost_multiplier = 1
     cost_multiplier *= (upgrades.eternal_scaling > 0? 1 - (0.05 * upgrades.eternal_scaling) : 1)

@@ -495,6 +495,105 @@ let upgrades_list = {
 
             max_level: 50
         },
+
+        {
+            id: "cartography",
+            name: "Cartography",
+            description: "Sketch a map as you go. Move faster through the caverns.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.05,
+                },
+                prefix: "+",
+                suffix: "x Move Speed"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 15,
+                    multiplier: 1.3
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 20
+        },
+
+        {
+            id: "lucky_find",
+            name: "Lucky Find",
+            description: "There's always something shiny on the ground. Earn extra research for every floor you pass.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.25,
+                },
+                prefix: "+",
+                suffix: "Research/Floor"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 8,
+                    multiplier: 1.4
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 25
+        },
+
+        {
+            id: "second_wind",
+            name: "Second Wind",
+            description: "Made it this far, might as well keep going. Restore courage whenever you reach a new floor.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 2,
+                },
+                prefix: "+",
+                suffix: "% Max Courage/Floor"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 30,
+                    multiplier: 1.6
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
     ],
 
     combat: [
@@ -891,6 +990,107 @@ let upgrades_list = {
 
             max_level: 30
         },
+
+        {
+            id: "critical_strike",
+            name: "Critical Strike",
+            description: "Aim for the weak spots. Gain a chance for attacks to deal double damage.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 5,
+                },
+                prefix: "+",
+                suffix: "% Crit Chance"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 20,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "combat",
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+
+        {
+            id: "bloodlust",
+            name: "Bloodlust",
+            description: "Nothing like a good fight to get the blood pumping. Heal whenever you defeat an enemy.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 3,
+                },
+                prefix: "+",
+                suffix: "% Max Health/Kill"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 25,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "combat",
+                    "extended_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
+
+        {
+            id: "trophy_hunter",
+            name: "Trophy Hunter",
+            description: "Every kill is a story to tell. Regain more courage when you defeat an enemy.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "% Max Courage/Kill"
+            },
+
+            cost: {
+                currency: "research",
+                amount: {
+                    type: "multiply",
+                    value: 10,
+                    multiplier: 1.4
+                },
+                prefix: "",
+                suffix: "Research"
+            },
+
+            requirements: {
+                unlocks: [
+                    "combat"
+                ]
+            },
+
+            max_level: 15
+        },
     ],
     prestige: [
         {
@@ -1114,6 +1314,102 @@ let upgrades_list = {
 
             max_level: 1
         },
+        {
+            id: "prestige_speed",
+            name: "P-Speed",
+            description: "Move faster through the caverns.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1
+                },
+                prefix: "+",
+                suffix: "x Move Speed"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 20
+        },
+        {
+            id: "prestige_agility",
+            name: "P-Agility",
+            description: "Attack faster.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1
+                },
+                prefix: "+",
+                suffix: " Attack Speed"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 20
+        },
+        {
+            id: "head_start",
+            name: "Head Start",
+            description: "Start each prestige with extra research.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 25
+                },
+                prefix: "+",
+                suffix: " Starting Research"
+            },
+
+            cost: {
+                currency: "prestige_points",
+                amount: {
+                    type: "multiply",
+                    value: 3,
+                    multiplier: 1.6
+                },
+                prefix: "",
+                suffix: "Prestige Points"
+            },
+
+            requirements: {
+                unlocks: [
+                    "prestige_upgrades"
+                ]
+            },
+
+            max_level: 10
+        },
     ],
     ascension: [
         {
@@ -1324,7 +1620,84 @@ let upgrades_list = {
 
             max_level: 1
         },
+        {
+            id: "ascended_speed",
+            name: "Ascended Speed",
+            description: "Multiply move speed based on ascension count.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1
+                },
+                prefix: "+",
+                suffix: "x Move Speed (per ascension)"
+            },
 
+            cost: {
+                currency: "ascension_points",
+                amount: {
+                    type: "multiply",
+                    value: 1,
+                    multiplier: 1.25
+                },
+                prefix: "",
+                suffix: "Ascension Points"
+            },
+
+            max_level: 10
+        },
+        {
+            id: "ascended_insight",
+            name: "Ascended Insight",
+            description: "Ascension points earned are multiplied.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.1
+                },
+                prefix: "+",
+                suffix: "x Ascension Gain"
+            },
+
+            cost: {
+                currency: "ascension_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Ascension Points"
+            },
+
+            max_level: 10
+        },
+        {
+            id: "ascended_vigor",
+            name: "Ascended Vigor",
+            description: "Multiply attack speed based on ascension count.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.05
+                },
+                prefix: "+",
+                suffix: "x Attack Speed (per ascension)"
+            },
+
+            cost: {
+                currency: "ascension_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.4
+                },
+                prefix: "",
+                suffix: "Ascension Points"
+            },
+
+            max_level: 10
+        },
     ],
     transcendence: [
         {
@@ -1482,6 +1855,84 @@ let upgrades_list = {
             },
 
             max_level: 1
+        },
+        {
+            id: "timeless_knowledge",
+            name: "Timeless Knowledge",
+            description: "Research is multiplied.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 1,
+                },
+                prefix: "+",
+                suffix: "x Research"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.5
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 10
+        },
+        {
+            id: "transcendent_might",
+            name: "Transcendent Might",
+            description: "Multiply attack and health based on transcendence count.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 0.25,
+                },
+                prefix: "+",
+                suffix: "x Attack & Health (per transcendence)"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 3,
+                    multiplier: 1.75
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 5
+        },
+        {
+            id: "starting_spark",
+            name: "Starting Spark",
+            description: "Start each transcendence with ascension points.",
+            effect: {
+                amount: {
+                    type: "increment",
+                    value: 2,
+                },
+                prefix: "+",
+                suffix: " Starting Ascension Points"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 5,
+                    multiplier: 2
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 5
         },
     ]
 }
@@ -1941,7 +2392,8 @@ function attempt_transcendence(data) {
     data.persist.layers.prestige = 0
 
 
-    data.persist.currencies.ascension_points = 0
+    // Starting Spark
+    data.persist.currencies.ascension_points = (data.persist.upgrades.starting_spark > 0? 2 * data.persist.upgrades.starting_spark : 0)
     data.persist.currencies.prestige_points = 0
     data.persist.currencies.research = 0
     data.persist.other.records.floor = 0
@@ -2157,6 +2609,12 @@ function game_tick(data) {
 
                         add_event_message(`Entered Floor ${data.non_persist.run.floor}`, "success")
 
+                        // Second Wind
+                        if (data.persist.upgrades.second_wind > 0) {
+                            let stats = data.non_persist.run.character_stats
+                            stats.courage = Math.min(stats.courage + stats.max_courage * 0.02 * data.persist.upgrades.second_wind, stats.max_courage)
+                        }
+
                         if (data.non_persist.run.floor > 2 || data.non_persist.prestige_points > 0) {
                             if (data.persist.unlocks.extended_upgrades != true) {
                                 data.persist.unlocks.extended_upgrades = true
@@ -2205,7 +2663,9 @@ function game_tick(data) {
 
                     if (data.non_persist.run.attack_tick >= 1) {
                         data.non_persist.run.attack_tick -= 1
-                        data.non_persist.run.enemy.stats.health -= calculate_damage_taken(calculate_attack(data), data.non_persist.run.enemy.stats.defense)
+                        // Critical Strike
+                        let attack_damage = calculate_attack(data) * (Math.random() < calculate_crit_chance(data)? 2 : 1)
+                        data.non_persist.run.enemy.stats.health -= calculate_damage_taken(attack_damage, data.non_persist.run.enemy.stats.defense)
                     }
 
                     if (data.non_persist.run.enemy.stats.health <= 0) {
@@ -2214,8 +2674,15 @@ function game_tick(data) {
                         data.non_persist.run.enemy_kills += 1
 
                         let stats = data.non_persist.run.character_stats
-                        let courage_gained = Math.min(stats.max_courage * 0.05, stats.max_courage - stats.courage)
+                        // Trophy Hunter adds to the base 5% courage per kill
+                        let kill_courage = 0.05 + (data.persist.upgrades.trophy_hunter > 0? 0.01 * data.persist.upgrades.trophy_hunter : 0)
+                        let courage_gained = Math.min(stats.max_courage * kill_courage, stats.max_courage - stats.courage)
                         stats.courage += courage_gained
+
+                        // Bloodlust
+                        if (data.persist.upgrades.bloodlust > 0) {
+                            stats.health = Math.min(stats.health + stats.max_health * 0.03 * data.persist.upgrades.bloodlust, stats.max_health)
+                        }
 
                         add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills) +${formatNumber(courage_gained)} Courage`, "success")
 
@@ -2443,6 +2910,8 @@ function attempt_prestige(data) {
     let prestige_reward = calculate_prestige_reward(data)
     data.persist.currencies.prestige_points += prestige_reward
     data.persist.currencies.research = data.persist.layers.prestige * 0.5
+    // Head Start
+    data.persist.currencies.research += (data.persist.upgrades.head_start > 0? 25 * data.persist.upgrades.head_start : 0)
     data.persist.other.records.floor = 0
 
     add_event_message(`Prestiged! Gained ${prestige_reward.toFixed(2)} prestige points`, "success")
