@@ -2598,7 +2598,8 @@ function game_tick(data) {
                     break
                 }
 
-                if (data.non_persist.run.move_tick >= 1) {
+                // Loop so speeds above 60 tiles/s still move every tile, but stop as soon as combat starts
+                while (data.non_persist.run.move_tick >= 1 && data.non_persist.run.in_combat == false) {
                     data.non_persist.run.move_tick -= 1
                     
                     data.non_persist.run.progress += 1
@@ -2641,6 +2642,8 @@ function game_tick(data) {
                         if (value.tile == data.non_persist.run.progress) {
                             data.non_persist.run.in_combat = true
                             data.non_persist.run.attack_tick = 0
+                            // Drop leftover movement so it isn't spent walking past the enemy
+                            data.non_persist.run.move_tick = 0
                             data.non_persist.run.enemy = value
                             add_event_message("Encountered an enemy!", "warning")
                             return
