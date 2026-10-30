@@ -319,7 +319,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: Infinity
         },
 
         {
@@ -493,7 +493,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 50
+            max_level: Infinity
         },
 
         {
@@ -627,7 +627,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 75
+            max_level: Infinity
         },
 
         {
@@ -660,7 +660,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 75
+            max_level: Infinity
         },
 
         {
@@ -734,7 +734,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 50
+            max_level: Infinity
         },
 
         {
@@ -807,7 +807,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 50
+            max_level: Infinity
         },
 
         {
@@ -908,7 +908,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: Infinity
         },
 
         {
