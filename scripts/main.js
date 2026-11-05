@@ -85,6 +85,13 @@ function load_data() {
         }
     }
 
+    // Rebalance lowered many max levels; clamp old saves to the new caps
+    Object.values(upgrades_list).flat().forEach((upgrade) => {
+        if (base_data.persist.upgrades[upgrade.id] > upgrade.max_level) {
+            base_data.persist.upgrades[upgrade.id] = upgrade.max_level
+        }
+    })
+
     // Courage Nexus was removed; refund its cost
     if (base_data.persist.upgrades.courage_nexus > 0) {
         base_data.persist.currencies.transcendence_points += 5
@@ -216,14 +223,14 @@ let upgrades_list = {
         {
             id: "torch_buff1",
             name: "Torch Power+",
-            description: "Make your torch shine even brighter than before.. Slows down courage loss multiplicatively.",
+            description: "A brighter flame keeps the dark at bay. Lose courage slower.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.1,
+                    value: 5
                 },
                 prefix: "-",
-                suffix: " x Courage Loss/s"
+                suffix: "% Courage Loss"
             },
 
             cost: {
@@ -246,7 +253,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 9
+            max_level: 10
         },
 
         // Extended Upgrades
@@ -319,7 +326,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 25
         },
 
         {
@@ -364,10 +371,10 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "increment",
-                    value: 0.1,
+                    value: 0.05
                 },
-                prefix: "*",
-                suffix: "Move Speed"
+                prefix: "+",
+                suffix: "x Speed (at 0 courage)"
             },
 
             cost: {
@@ -375,7 +382,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 1,
-                    multiplier: 1.25
+                    multiplier: 1.35
                 },
                 prefix: "",
                 suffix: "Research"
@@ -392,7 +399,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 40
+            max_level: 20
         },
 
         {
@@ -447,7 +454,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 10,
-                    multiplier: 1.75
+                    multiplier: 1.341
                 },
                 prefix: "",
                 suffix: "Research"
@@ -468,9 +475,8 @@ let upgrades_list = {
             description: "It's mindnumbing how many times you've gone through the caverns. Lose courage slower.",
             effect: {
                 amount: {
-                    type: "multiply_effect",
-                    value: 0.8,
-                    multiplier: 0.8
+                    type: "power",
+                    multiplier: 0.9
                 },
                 prefix: "",
                 suffix: "x Courage Loss"
@@ -481,7 +487,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 20,
-                    multiplier: 1.25
+                    multiplier: 1.4
                 },
                 prefix: "",
                 suffix: "Research"
@@ -493,7 +499,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 10
         },
 
         {
@@ -526,7 +532,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 20
+            max_level: 10
         },
 
         {
@@ -547,7 +553,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 8,
-                    multiplier: 1.4
+                    multiplier: 1.308
                 },
                 prefix: "",
                 suffix: "Research"
@@ -604,7 +610,7 @@ let upgrades_list = {
             effect: {
                 amount: {
                     type: "increment",
-                    value: 1,
+                    value: 2
                 },
                 prefix: "+",
                 suffix: "Health"
@@ -627,7 +633,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 25
         },
 
         {
@@ -648,7 +654,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 5,
-                    multiplier: 1.25
+                    multiplier: 1.3
                 },
                 prefix: "",
                 suffix: "Research"
@@ -660,7 +666,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 20
         },
 
         {
@@ -699,15 +705,14 @@ let upgrades_list = {
         {
             id: "enhance_sword",
             name: "Enhance Sword",
-            description: "Work on making your blade the best it can be. Further increases attack power.",
+            description: "Sharpen and reinforce your blade. Multiplies attack.",
             effect: {
                 amount: {
-                    type: "multiply_effect",
-                    value: 2,
-                    multiplier: 1.25
+                    type: "increment",
+                    value: 0.1
                 },
                 prefix: "+",
-                suffix: "Attack"
+                suffix: "x Attack"
             },
 
             cost: {
@@ -715,7 +720,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 100,
-                    multiplier: 1.5
+                    multiplier: 1.438
                 },
                 prefix: "",
                 suffix: "Research"
@@ -734,7 +739,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 20
         },
 
         {
@@ -755,7 +760,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 10,
-                    multiplier: 1.5
+                    multiplier: 1.239
                 },
                 prefix: "",
                 suffix: "Research"
@@ -773,14 +778,14 @@ let upgrades_list = {
         {
             id: "enhance_armor",
             name: "Enhance Armor",
-            description: "Toughen up your armor. Further increases defense.",
+            description: "Reinforce your armor plating. Multiplies defense.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 2
+                    value: 0.1
                 },
                 prefix: "+",
-                suffix: "Defense"
+                suffix: "x Defense"
             },
 
             cost: {
@@ -788,7 +793,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 600,
-                    multiplier: 1.75
+                    multiplier: 1.309
                 },
                 prefix: "",
                 suffix: "Research"
@@ -807,7 +812,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 20
         },
 
         {
@@ -840,7 +845,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 60
+            max_level: 20
         },
 
         {
@@ -861,7 +866,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 7.5,
-                    multiplier: 1.5
+                    multiplier: 1.251
                 },
                 prefix: "",
                 suffix: "Research"
@@ -908,7 +913,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: Infinity
+            max_level: 15
         },
 
         {
@@ -929,7 +934,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 10,
-                    multiplier: 1.5
+                    multiplier: 1.239
                 },
                 prefix: "",
                 suffix: "Research"
@@ -969,7 +974,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 12.5,
-                    multiplier: 1.5
+                    multiplier: 1.229
                 },
                 prefix: "",
                 suffix: "Research"
@@ -1096,14 +1101,14 @@ let upgrades_list = {
         {
             id: "prestige_research",
             name: "P-Research",
-            description: "Gain significantly more research.",
+            description: "Multiply research gain.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.5,
+                    type: "power",
+                    multiplier: 1.5
                 },
-                prefix: "+",
-                suffix: "x Research"
+                prefix: "x",
+                suffix: " Research"
             },
 
             cost: {
@@ -1122,7 +1127,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 20
         },
         {
             id: "prestige_courage",
@@ -1153,7 +1158,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 20
         },
         {
             id: "prestige_courage_loss",
@@ -1161,9 +1166,8 @@ let upgrades_list = {
             description: "Lose courage significantly slower.",
             effect: {
                 amount: {
-                    type: "multiply_effect",
-                    value: 0.875,
-                    multiplier: 0.875
+                    type: "power",
+                    multiplier: 0.95
                 },
                 prefix: "",
                 suffix: "x Courage Loss"
@@ -1185,19 +1189,18 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 20
         },
         {
             id: "prestige_health",
             name: "P-Health",
-            description: "Gain exponentially more health.",
+            description: "Multiply max health.",
             effect: {
                 amount: {
-                    type: "multiply_effect",
-                    value: 2,
-                    multiplier: 1.625
+                    type: "power",
+                    multiplier: 1.2
                 },
-                prefix: "+",
+                prefix: "x",
                 suffix: " Health"
             },
 
@@ -1217,18 +1220,18 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 25
         },
         {
             id: "prestige_defense",
             name: "P-Defense",
-            description: "Gain more defense.",
+            description: "Multiply defense.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 1
+                    type: "power",
+                    multiplier: 1.2
                 },
-                prefix: "+",
+                prefix: "x",
                 suffix: " Defense"
             },
 
@@ -1237,7 +1240,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.152
                 },
                 prefix: "",
                 suffix: "Prestige Points"
@@ -1249,18 +1252,18 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 25
         },
         {
             id: "prestige_attack",
             name: "P-Attack",
-            description: "Gain more attack power.",
+            description: "Multiply attack power.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.5
+                    type: "power",
+                    multiplier: 1.2
                 },
-                prefix: "+",
+                prefix: "x",
                 suffix: " Attack"
             },
 
@@ -1269,7 +1272,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.152
                 },
                 prefix: "",
                 suffix: "Prestige Points"
@@ -1281,7 +1284,7 @@ let upgrades_list = {
                 ]
             },
 
-            max_level: 30
+            max_level: 25
         },
         {
             id: "auto_shop",
@@ -1317,14 +1320,14 @@ let upgrades_list = {
         {
             id: "prestige_speed",
             name: "P-Speed",
-            description: "Move faster through the caverns.",
+            description: "Multiply move speed.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1
+                    type: "power",
+                    multiplier: 1.12
                 },
-                prefix: "+",
-                suffix: "x Move Speed"
+                prefix: "x",
+                suffix: " Move Speed"
             },
 
             cost: {
@@ -1332,7 +1335,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.196
                 },
                 prefix: "",
                 suffix: "Prestige Points"
@@ -1349,13 +1352,13 @@ let upgrades_list = {
         {
             id: "prestige_agility",
             name: "P-Agility",
-            description: "Attack faster.",
+            description: "Multiply attack speed.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1
+                    type: "power",
+                    multiplier: 1.1
                 },
-                prefix: "+",
+                prefix: "x",
                 suffix: " Attack Speed"
             },
 
@@ -1364,7 +1367,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.196
                 },
                 prefix: "",
                 suffix: "Prestige Points"
@@ -1396,7 +1399,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 3,
-                    multiplier: 1.6
+                    multiplier: 1.395
                 },
                 prefix: "",
                 suffix: "Prestige Points"
@@ -1444,8 +1447,7 @@ let upgrades_list = {
             description: "Prestige points earned are multiplied.",
             effect: {
                 amount: {
-                    type: "multiply_effect",
-                    value: 1,
+                    type: "power",
                     multiplier: 1.5
                 },
                 prefix: "x",
@@ -1468,14 +1470,14 @@ let upgrades_list = {
         {
             id: "ascended_research",
             name: "Ascended Research",
-            description: "Gain more research based on ascension count.",
+            description: "Multiply research gain.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.5,
+                    type: "power",
+                    multiplier: 2
                 },
-                prefix: "+",
-                suffix: "x Research (per ascension)"
+                prefix: "x",
+                suffix: " Research"
             },
 
             cost: {
@@ -1494,14 +1496,14 @@ let upgrades_list = {
         {
             id: "ascended_courage",
             name: "Ascended Courage",
-            description: "Multiply max courage based on ascension count.",
+            description: "Multiply max courage.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1,
+                    type: "power",
+                    multiplier: 1.19
                 },
-                prefix: "+",
-                suffix: "x Courage (per ascension)"
+                prefix: "x",
+                suffix: " Max Courage"
             },
 
             cost: {
@@ -1515,19 +1517,19 @@ let upgrades_list = {
                 suffix: "Ascension Points"
             },
 
-            max_level: 10
+            max_level: 15
         },
         {
             id: "ascended_health",
             name: "Ascended Health",
-            description: "Multiply max health based on ascension count.",
+            description: "Multiply max health.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1,
+                    type: "power",
+                    multiplier: 1.6
                 },
-                prefix: "+",
-                suffix: "x Health (per ascension)"
+                prefix: "x",
+                suffix: " Health"
             },
 
             cost: {
@@ -1535,7 +1537,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.43
                 },
                 prefix: "",
                 suffix: "Ascension Points"
@@ -1546,14 +1548,14 @@ let upgrades_list = {
         {
             id: "ascended_defense",
             name: "Ascended Defense",
-            description: "Multiply defense based on ascension count.",
+            description: "Multiply defense.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1,
+                    type: "power",
+                    multiplier: 1.6
                 },
-                prefix: "+",
-                suffix: "x Defense (per ascension)"
+                prefix: "x",
+                suffix: " Defense"
             },
 
             cost: {
@@ -1572,14 +1574,14 @@ let upgrades_list = {
         {
             id: "ascended_attack",
             name: "Ascended Attack",
-            description: "Multiply attack power based on ascension count.",
+            description: "Multiply attack power.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1
+                    type: "power",
+                    multiplier: 1.37
                 },
-                prefix: "+",
-                suffix: "x Attack (per ascension)"
+                prefix: "x",
+                suffix: " Attack"
             },
 
             cost: {
@@ -1623,14 +1625,14 @@ let upgrades_list = {
         {
             id: "ascended_speed",
             name: "Ascended Speed",
-            description: "Multiply move speed based on ascension count.",
+            description: "Multiply move speed.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.1
+                    type: "power",
+                    multiplier: 1.25
                 },
-                prefix: "+",
-                suffix: "x Move Speed (per ascension)"
+                prefix: "x",
+                suffix: " Move Speed"
             },
 
             cost: {
@@ -1664,7 +1666,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.43
                 },
                 prefix: "",
                 suffix: "Ascension Points"
@@ -1675,14 +1677,14 @@ let upgrades_list = {
         {
             id: "ascended_vigor",
             name: "Ascended Vigor",
-            description: "Multiply attack speed based on ascension count.",
+            description: "Multiply attack speed.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.05
+                    type: "power",
+                    multiplier: 1.26
                 },
-                prefix: "+",
-                suffix: "x Attack Speed (per ascension)"
+                prefix: "x",
+                suffix: " Attack Speed"
             },
 
             cost: {
@@ -1745,7 +1747,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.43
                 },
                 prefix: "",
                 suffix: "Transcendence Points"
@@ -1808,22 +1810,22 @@ let upgrades_list = {
         {
             id: "beyond_infinity",
             name: "Beyond Infinity",
-            description: "Allow ascending even after reaching the prestige cap.",
+            description: "Keep part of your prestige upgrade levels when you ascend.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 1,
+                    value: 33.3
                 },
-                prefix: "+",
-                suffix: "Max Ascensions"
+                prefix: "",
+                suffix: "% Prestige Upgrades Kept"
             },
 
             cost: {
                 currency: "transcendence_points",
                 amount: {
                     type: "multiply",
-                    value: 10,
-                    multiplier: 2
+                    value: 3,
+                    multiplier: 2.5
                 },
                 prefix: "",
                 suffix: "Transcendence Points"
@@ -1874,7 +1876,7 @@ let upgrades_list = {
                 amount: {
                     type: "multiply",
                     value: 2,
-                    multiplier: 1.5
+                    multiplier: 1.43
                 },
                 prefix: "",
                 suffix: "Transcendence Points"
@@ -1885,14 +1887,92 @@ let upgrades_list = {
         {
             id: "transcendent_might",
             name: "Transcendent Might",
-            description: "Multiply attack and health based on transcendence count.",
+            description: "Multiply attack and max health.",
             effect: {
                 amount: {
-                    type: "increment",
-                    value: 0.25,
+                    type: "power",
+                    multiplier: 2.5
                 },
-                prefix: "+",
-                suffix: "x Attack & Health (per transcendence)"
+                prefix: "x",
+                suffix: " Attack & Health"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 3,
+                    multiplier: 1.75
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 5
+        },
+        {
+            id: "eternal_resolve",
+            name: "Eternal Resolve",
+            description: "Multiply max courage.",
+            effect: {
+                amount: {
+                    type: "power",
+                    multiplier: 1.26
+                },
+                prefix: "x",
+                suffix: " Max Courage"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.43
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 10
+        },
+        {
+            id: "phase_step",
+            name: "Phase Step",
+            description: "Multiply move speed and attack speed.",
+            effect: {
+                amount: {
+                    type: "power",
+                    multiplier: 1.26
+                },
+                prefix: "x",
+                suffix: " Move & Attack Speed"
+            },
+
+            cost: {
+                currency: "transcendence_points",
+                amount: {
+                    type: "multiply",
+                    value: 2,
+                    multiplier: 1.43
+                },
+                prefix: "",
+                suffix: "Transcendence Points"
+            },
+
+            max_level: 10
+        },
+        {
+            id: "transcendent_guard",
+            name: "Transcendent Guard",
+            description: "Multiply defense.",
+            effect: {
+                amount: {
+                    type: "power",
+                    multiplier: 2.5
+                },
+                prefix: "x",
+                suffix: " Defense"
             },
 
             cost: {
@@ -1911,28 +1991,28 @@ let upgrades_list = {
         {
             id: "starting_spark",
             name: "Starting Spark",
-            description: "Start each transcendence with ascension points.",
+            description: "Keep part of your ascension upgrade levels when you transcend.",
             effect: {
                 amount: {
                     type: "increment",
-                    value: 2,
+                    value: 33.3
                 },
-                prefix: "+",
-                suffix: " Starting Ascension Points"
+                prefix: "",
+                suffix: "% Ascension Upgrades Kept"
             },
 
             cost: {
                 currency: "transcendence_points",
                 amount: {
                     type: "multiply",
-                    value: 5,
-                    multiplier: 2
+                    value: 3,
+                    multiplier: 2.5
                 },
                 prefix: "",
                 suffix: "Transcendence Points"
             },
 
-            max_level: 5
+            max_level: 3
         },
     ]
 }
@@ -2253,7 +2333,7 @@ function prestige_available(data) {
     if (data.persist.unlocks.prestige != true) {
         return false
     }
-    if (data.persist.other.records.floor < 6) {
+    if (data.persist.other.records.floor < PRESTIGE_FLOOR) {
         return false
     }
     return true
@@ -2263,11 +2343,7 @@ function ascension_available(data) {
     if (data.persist.unlocks.ascension != true) {
         return false
     }
-    if (data.persist.currencies.prestige_points < 10) {
-        return false
-    }
-    let max_ascensions = 10 + (data.persist.upgrades.beyond_infinity > 0 ? Math.min(data.persist.upgrades.beyond_infinity, 3) : 0)
-    if (data.persist.layers.ascension >= max_ascensions) {
+    if (data.persist.layers.max_floor_this_ascension < ASCENSION_FLOOR) {
         return false
     }
     return true
@@ -2290,9 +2366,12 @@ function attempt_ascension(data) {
         }
     })
 
+    // Beyond Infinity keeps a third of each prestige upgrade's levels per level
+    let prestige_kept = (data.persist.upgrades.beyond_infinity > 0? Math.min(data.persist.upgrades.beyond_infinity, 3) / 3 : 0)
     upgrades_list.prestige.forEach((value, _index, _array) => {
         if (data.persist.upgrades[value.id] != null) {
-            data.persist.upgrades[value.id] = null
+            let kept_level = Math.floor(data.persist.upgrades[value.id] * prestige_kept)
+            data.persist.upgrades[value.id] = (kept_level > 0? kept_level : null)
         }
     })
 
@@ -2300,6 +2379,7 @@ function attempt_ascension(data) {
     data.persist.unlocks.extended_upgrades = false;
     data.persist.unlocks.prestige = false;
     data.persist.unlocks.ascension = true;
+    data.persist.unlocks.transcendence = true;
 
     if (data.non_persist.run_active == true) {
         end_run(data)
@@ -2337,7 +2417,7 @@ function transcendence_available(data) {
     if (data.persist.unlocks.transcendence != true) {
         return false
     }
-    if (data.persist.other.records.floor < 30) {
+    if (data.persist.layers.max_floor_this_ascension < TRANSCENDENCE_FLOOR) {
         return false
     }
     return true
@@ -2366,9 +2446,12 @@ function attempt_transcendence(data) {
         }
     })
 
+    // Starting Spark keeps a third of each ascension upgrade's levels per level
+    let ascension_kept = (data.persist.upgrades.starting_spark > 0? Math.min(data.persist.upgrades.starting_spark, 3) / 3 : 0)
     upgrades_list.ascension.forEach((value, _index, _array) => {
         if (data.persist.upgrades[value.id] != null) {
-            data.persist.upgrades[value.id] = null
+            let kept_level = Math.floor(data.persist.upgrades[value.id] * ascension_kept)
+            data.persist.upgrades[value.id] = (kept_level > 0? kept_level : null)
         }
     })
 
@@ -2392,8 +2475,7 @@ function attempt_transcendence(data) {
     data.persist.layers.prestige = 0
 
 
-    // Starting Spark
-    data.persist.currencies.ascension_points = (data.persist.upgrades.starting_spark > 0? 2 * data.persist.upgrades.starting_spark : 0)
+    data.persist.currencies.ascension_points = 0
     data.persist.currencies.prestige_points = 0
     data.persist.currencies.research = 0
     data.persist.other.records.floor = 0
@@ -2534,6 +2616,112 @@ function end_run(data) {
     document.getElementById("start_run_button").removeAttribute("disabled")
 }
 
+// Moves the player one tile, handling new floors and enemy encounters. Returns true if a new floor was entered.
+function advance_tile(data) {
+    let run = data.non_persist.run
+    let wrapped_floor = false
+
+    run.progress += 1
+    if (run.progress >= 10) {
+        run.progress -= 10
+        run.floor += 1
+        wrapped_floor = true
+        data.persist.layers.max_floor_this_ascension = Math.max(data.persist.layers.max_floor_this_ascension, run.floor)
+
+        if (is_log_milestone_floor(run.floor)) {
+            add_event_message(`Entered Floor ${run.floor}`, "success")
+        }
+
+        // Second Wind
+        if (data.persist.upgrades.second_wind > 0) {
+            let stats = run.character_stats
+            stats.courage = Math.min(stats.courage + stats.max_courage * 0.02 * data.persist.upgrades.second_wind, stats.max_courage)
+        }
+
+        if (run.floor > 2 || data.non_persist.prestige_points > 0) {
+            if (data.persist.unlocks.extended_upgrades != true) {
+                data.persist.unlocks.extended_upgrades = true
+            }
+            if (data.persist.unlocks.prestige != true) {
+                data.persist.unlocks.prestige = true
+            }
+        }
+
+        let enemy_stats = calculate_enemy_stats(run.floor)
+        append_enemy(data, 1, enemy_stats.health, enemy_stats.attack, enemy_stats.defense, enemy_stats.speed, enemy_graphic_order[(run.floor - 1) % enemy_graphic_order.length])
+    }
+
+    let encountered = run.enemies.find((enemy) => enemy.tile == run.progress)
+    if (encountered != null) {
+        run.enemy = encountered
+        if (data.persist.unlocks.combat != true) {
+            data.persist.unlocks.combat = true
+        }
+
+        // First strike: enemies that die to one hit don't stop you
+        player_attack_enemy(data)
+        if (encountered.stats.health <= 0) {
+            defeat_enemy(data, true)
+        } else {
+            run.in_combat = true
+            run.attack_tick = 0
+            if (is_log_milestone_floor(run.floor)) {
+                add_event_message("Encountered an enemy!", "warning")
+            }
+        }
+    }
+
+    return wrapped_floor
+}
+
+// Applies a courage change and returns true if courage ran out
+function change_courage(data, amount) {
+    let stats = data.non_persist.run.character_stats
+    stats.courage = Math.min(Math.max(stats.courage + amount, 0), stats.max_courage)
+    return stats.courage <= 0
+}
+
+// Log every floor up to 10, then every 10th floor up to 100, every 100th up to 1000, and so on
+function is_log_milestone_floor(floor) {
+    if (floor <= 10) {
+        return true
+    }
+    let step = Math.pow(10, Math.floor(Math.log10(floor)))
+    return floor % step == 0
+}
+
+function player_attack_enemy(data) {
+    // Critical Strike
+    let attack_damage = calculate_attack(data) * (Math.random() < calculate_crit_chance(data)? 2 : 1)
+    data.non_persist.run.enemy.stats.health -= calculate_damage_taken(attack_damage, data.non_persist.run.enemy.stats.defense)
+}
+
+// Quiet kills (first strike) skip the log message so fast runs don't flood the event log
+function defeat_enemy(data, quiet) {
+    document.getElementById("enemy_stats_container").style.display = "none"
+
+    data.non_persist.run.enemy_kills += 1
+
+    let stats = data.non_persist.run.character_stats
+    // Trophy Hunter adds to the base 5% courage per kill
+    let kill_courage = 0.05 + (data.persist.upgrades.trophy_hunter > 0? 0.01 * data.persist.upgrades.trophy_hunter : 0)
+    let courage_gained = Math.min(stats.max_courage * kill_courage, stats.max_courage - stats.courage)
+    stats.courage += courage_gained
+
+    // Bloodlust
+    if (data.persist.upgrades.bloodlust > 0) {
+        stats.health = Math.min(stats.health + stats.max_health * 0.03 * data.persist.upgrades.bloodlust, stats.max_health)
+    }
+
+    if (!quiet) {
+        add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills) +${formatNumber(courage_gained)} Courage`, "success")
+    }
+
+    data.non_persist.run.in_combat = false
+    remove_enemy(data, data.non_persist.run.enemy.tile)
+    data.non_persist.run.enemy = null
+}
+
 function game_tick(data) {
     let time_elapsed = (Date.now() - last_date) / 1000
     last_date = Date.now()
@@ -2551,8 +2739,8 @@ function game_tick(data) {
 
     // Passive currency generation
     // Cosmic Engine: 0.1% of prestige points per second
-    if (data.persist.upgrades.cosmic_engine == 1 && data.persist.currencies.prestige_points > 0) {
-        data.persist.currencies.transcendence_points += data.persist.currencies.prestige_points * 0.001 * time_elapsed
+    if (data.non_persist.run_active && data.persist.upgrades.cosmic_engine == 1 && data.persist.currencies.prestige_points > 0) {
+        data.persist.currencies.prestige_points += data.persist.currencies.prestige_points * 0.001 * time_elapsed
     }
 
     // Dimensional Echo: +0.05% research per second per level (max 5), only while in a run
@@ -2578,19 +2766,9 @@ function game_tick(data) {
                 last_game_tick -= 0.016
 
                 document.getElementById("start_run_button").setAttribute("disabled", "disabled")
-                data.non_persist.run.move_tick += calculate_move_speed(data) / 60
 
-                let current_courage_loss = calculate_courage_change(data)
-                data.non_persist.run.character_stats.courage = Math.min(Math.max(data.non_persist.run.character_stats.courage + current_courage_loss / 60, 0), data.non_persist.run.character_stats.max_courage)
-                
                 let current_health_change = calculate_health_change(data)
                 data.non_persist.run.character_stats.health = Math.min(Math.max(data.non_persist.run.character_stats.health + current_health_change / 60, 0), data.non_persist.run.character_stats.max_health)
-
-                if (data.non_persist.run.character_stats.courage <= 0) {
-                    add_event_message("Ran out of courage... Fled the caverns", "danger")
-                    end_run(data)
-                    break
-                }
 
                 if (data.non_persist.run.character_stats.health <= 0) {
                     add_event_message("Health depleted... Fled the caverns", "danger")
@@ -2598,110 +2776,80 @@ function game_tick(data) {
                     break
                 }
 
-                // Loop so speeds above 60 tiles/s still move every tile, but stop as soon as combat starts
-                while (data.non_persist.run.move_tick >= 1 && data.non_persist.run.in_combat == false) {
-                    data.non_persist.run.move_tick -= 1
-                    
-                    data.non_persist.run.progress += 1
-                    if (data.non_persist.run.progress >= 10) {
-                        data.non_persist.run.progress -= 10
-                        data.non_persist.run.floor += 1
-                        data.persist.layers.max_floor_this_ascension = Math.max(data.persist.layers.max_floor_this_ascension, data.non_persist.run.floor)
+                // Step through this frame event by event (next tile, next hit, next enemy attack),
+                // so very high move and attack speeds stay accurate and can clear several floors per frame.
+                let wrapped_floor = false
+                let moved = false
+                let run_over = false
+                let time_left = 1 / 60
+                while (time_left > 1e-9 && run_over == false) {
+                    let run = data.non_persist.run
 
-                        add_event_message(`Entered Floor ${data.non_persist.run.floor}`, "success")
+                    if (run.in_combat == false) {
+                        let speed = calculate_move_speed(data)
+                        let step = Math.min(time_left, (1 - run.move_tick) / speed)
+                        time_left -= step
 
-                        // Second Wind
-                        if (data.persist.upgrades.second_wind > 0) {
-                            let stats = data.non_persist.run.character_stats
-                            stats.courage = Math.min(stats.courage + stats.max_courage * 0.02 * data.persist.upgrades.second_wind, stats.max_courage)
+                        if (change_courage(data, calculate_courage_change(data) * step)) {
+                            add_event_message("Ran out of courage... Fled the caverns", "danger")
+                            run_over = true
+                            break
                         }
 
-                        if (data.non_persist.run.floor > 2 || data.non_persist.prestige_points > 0) {
-                            if (data.persist.unlocks.extended_upgrades != true) {
-                                data.persist.unlocks.extended_upgrades = true
-                            }
-                            if (data.persist.unlocks.prestige != true) {
-                                data.persist.unlocks.prestige = true
+                        run.move_tick += speed * step
+                        if (run.move_tick < 1 - 1e-9) {
+                            continue
+                        }
+                        run.move_tick = 0
+                        moved = true
+                        wrapped_floor = advance_tile(data) || wrapped_floor
+                    } else {
+                        let enemy = run.enemy
+                        let attack_speed = calculate_attack_speed(data)
+                        let step = Math.min(time_left, (1 - run.attack_tick) / attack_speed, (1 - enemy.action_tick) / enemy.stats.speed)
+                        time_left -= step
+
+                        // No drain in combat, but courage regen still applies
+                        change_courage(data, calculate_courage_change(data) * step)
+
+                        run.attack_tick += attack_speed * step
+                        enemy.action_tick += enemy.stats.speed * step
+
+                        if (enemy.action_tick >= 1 - 1e-9) {
+                            enemy.action_tick = 0
+                            run.character_stats.health -= calculate_damage_taken(enemy.stats.attack, calculate_defense(data))
+                            if (run.character_stats.health <= 0) {
+                                add_event_message("Health depleted... Fled the caverns", "danger")
+                                run_over = true
+                                break
                             }
                         }
 
-                        if (data.non_persist.run.floor >= 30) {
-                            if (data.persist.unlocks.transcendence != true) {
-                                data.persist.unlocks.transcendence = true
+                        if (run.attack_tick >= 1 - 1e-9) {
+                            run.attack_tick = 0
+                            player_attack_enemy(data)
+                            if (enemy.stats.health <= 0) {
+                                defeat_enemy(data, !is_log_milestone_floor(run.floor))
                             }
                         }
-
-                        append_enemy(data, 1, 2 * Math.pow(1.5, (data.non_persist.run.floor - 1)), 1 * Math.pow(1.3, (data.non_persist.run.floor - 1)), Math.floor((data.non_persist.run.floor - 1) / 5), 1, enemy_graphic_order[(data.non_persist.run.floor - 1) % enemy_graphic_order.length])
                     }
-                    
-                    data.non_persist.run.enemies.forEach((value, _index, _array) => {
-                        if (data.non_persist.run.in_combat) {
-                            return
-                        }
+                }
+                if (moved) {
+                    set_player_progress(data.non_persist.run.progress, wrapped_floor)
+                }
 
-                        if (value.tile == data.non_persist.run.progress) {
-                            data.non_persist.run.in_combat = true
-                            data.non_persist.run.attack_tick = 0
-                            // Drop leftover movement so it isn't spent walking past the enemy
-                            data.non_persist.run.move_tick = 0
-                            data.non_persist.run.enemy = value
-                            add_event_message("Encountered an enemy!", "warning")
-                            return
-                        }
-                    })
-                    set_player_progress(data.non_persist.run.progress, data.non_persist.run.progress == 0)
+                if (run_over) {
+                    end_run(data)
+                    break
                 }
 
                 if (data.non_persist.run.in_combat) {
                     data.non_persist.run.enemy.element.style.setProperty("--offset", "16px")
                     document.getElementById("run_player_icon").style.setProperty("--offset", "-16px")
-
-                    data.non_persist.run.enemy.action_tick += data.non_persist.run.enemy.stats.speed / 60
-                    data.non_persist.run.attack_tick += calculate_attack_speed(data) / 60
-
-                    if (data.non_persist.run.enemy.action_tick >= 1) {
-                        data.non_persist.run.enemy.action_tick -= 1
-                        data.non_persist.run.character_stats.health -= calculate_damage_taken(data.non_persist.run.enemy.stats.attack, calculate_defense(data))
-                    }
-
-                    if (data.non_persist.run.attack_tick >= 1) {
-                        data.non_persist.run.attack_tick -= 1
-                        // Critical Strike
-                        let attack_damage = calculate_attack(data) * (Math.random() < calculate_crit_chance(data)? 2 : 1)
-                        data.non_persist.run.enemy.stats.health -= calculate_damage_taken(attack_damage, data.non_persist.run.enemy.stats.defense)
-                    }
-
-                    if (data.non_persist.run.enemy.stats.health <= 0) {
-                        document.getElementById("enemy_stats_container").style.display = "none"
-
-                        data.non_persist.run.enemy_kills += 1
-
-                        let stats = data.non_persist.run.character_stats
-                        // Trophy Hunter adds to the base 5% courage per kill
-                        let kill_courage = 0.05 + (data.persist.upgrades.trophy_hunter > 0? 0.01 * data.persist.upgrades.trophy_hunter : 0)
-                        let courage_gained = Math.min(stats.max_courage * kill_courage, stats.max_courage - stats.courage)
-                        stats.courage += courage_gained
-
-                        // Bloodlust
-                        if (data.persist.upgrades.bloodlust > 0) {
-                            stats.health = Math.min(stats.health + stats.max_health * 0.03 * data.persist.upgrades.bloodlust, stats.max_health)
-                        }
-
-                        add_event_message(`Defeated an enemy! (${data.non_persist.run.enemy_kills} kills) +${formatNumber(courage_gained)} Courage`, "success")
-
-                        data.non_persist.run.in_combat = false
-                        remove_enemy(data, data.non_persist.run.enemy.tile)
-                        data.non_persist.run.enemy = null
-                    }
                 } else {
                     document.getElementById("run_player_icon").style.setProperty("--offset", "0px")
                 }
             
-                if (data.non_persist.run.in_combat) {
-                    if (data.persist.unlocks.combat != true) {
-                        data.persist.unlocks.combat = true
-                    }
-                }
             
                 document.getElementById("active_run_info").innerHTML = "Floor " + data.non_persist.run.floor.toString() + " - " + data.non_persist.run.progress.toString() + "/10"
             }
@@ -2794,7 +2942,7 @@ function display_tick(data) {
             prestige_button.innerHTML = "+" + formatNumber(calculate_prestige_reward(data)) + " Prestige Points"
             prestige_button.removeAttribute("disabled");
         } else {
-            prestige_button.innerHTML = "Reach Floor 6"
+            prestige_button.innerHTML = "Reach Floor " + PRESTIGE_FLOOR + " to Prestige"
             prestige_button.setAttribute("disabled", "hi");
         }
     }
@@ -2808,7 +2956,7 @@ function display_tick(data) {
 
         let reward_preview_text = "You will gain " + formatNumber(ascension_reward) + " Ascension Points (Furthest floor this ascension: " + (data.persist.layers.max_floor_this_ascension || 0) + ")"
         if (ascension_reward <= 0) {
-            reward_preview_text += " (reach floor 4 for your first point)"
+            reward_preview_text += " (reach floor " + ASCENSION_FLOOR + " to ascend)"
         }
         document.getElementById("ascension_reward_preview").innerHTML = reward_preview_text
 
@@ -2816,8 +2964,7 @@ function display_tick(data) {
             ascend_button.innerHTML = "Ascend for +" + formatNumber(ascension_reward) + " Ascension Points"
             ascend_button.removeAttribute("disabled");
         } else {
-            let prestige_needed = Math.max(0, 10 - data.persist.currencies.prestige_points)
-            ascend_button.innerHTML = "Gain " + prestige_needed.toFixed(0) + " More Prestige Points to Ascend"
+            ascend_button.innerHTML = "Reach Floor " + ASCENSION_FLOOR + " to Ascend"
             ascend_button.setAttribute("disabled", "hi");
         }
     }
@@ -2829,14 +2976,14 @@ function display_tick(data) {
         let transcend_button = document.getElementById("transcend_button")
         let transcendence_reward = calculate_transcendence_reward(data)
 
-        document.getElementById("transcendence_reward_preview").innerHTML = "You will gain " + formatNumber(transcendence_reward) + " Transcendence Points (Ascensions: " + (data.persist.layers.ascension || 0) + ", Furthest floor this ascension: " + (data.persist.layers.max_floor_this_ascension || 0) + ")"
+        document.getElementById("transcendence_reward_preview").innerHTML = "You will gain " + formatNumber(transcendence_reward) + " Transcendence Points (Furthest floor this ascension: " + (data.persist.layers.max_floor_this_ascension || 0) + ")"
 
         if (transcendence_available(data)) {
             transcend_button.innerHTML = "Transcend for +" + formatNumber(transcendence_reward) + " Transcendence Points"
             transcend_button.removeAttribute("disabled");
         } else {
-            let floor_needed = Math.max(0, 30 - data.persist.other.records.floor)
-            transcend_button.innerHTML = "Reach Floor 30 to Transcend (" + floor_needed + " more)"
+            let floor_needed = Math.max(0, TRANSCENDENCE_FLOOR - data.persist.layers.max_floor_this_ascension)
+            transcend_button.innerHTML = "Reach Floor " + TRANSCENDENCE_FLOOR + " to Transcend (" + floor_needed + " more)"
             transcend_button.setAttribute("disabled", "hi");
         }
     }

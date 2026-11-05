@@ -1,3 +1,8 @@
+// Furthest floor needed to reset each layer
+const PRESTIGE_FLOOR = 10
+const ASCENSION_FLOOR = 100
+const TRANSCENDENCE_FLOOR = 1000
+
 function formatNumber(num) {
     if (num >= 1000000000) {
         return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'
@@ -23,12 +28,12 @@ function calculate_courage_loss_multiplier(data) {
     multiplier *= (data.persist.upgrades.careful_looking == 1? 1.1 : 1)
 
     // Torch Buff Upgrade
-    multiplier *= (data.persist.upgrades.torch_buff1 > 0? Math.max(0, 1 - 0.1 * data.persist.upgrades.torch_buff1) : 1)
+    multiplier *= (data.persist.upgrades.torch_buff1 > 0? Math.max(0, 1 - 0.05 * data.persist.upgrades.torch_buff1) : 1)
 
     // Mental Endurance Upgrade
-    multiplier *= (data.persist.upgrades.compound_courage > 0? Math.pow(0.8, data.persist.upgrades.compound_courage) : 1)
+    multiplier *= (data.persist.upgrades.compound_courage > 0? Math.pow(0.9, data.persist.upgrades.compound_courage) : 1)
 
-    multiplier *= (data.persist.upgrades.prestige_courage_loss > 0? Math.pow(0.875, data.persist.upgrades.prestige_courage_loss) : 1)
+    multiplier *= (data.persist.upgrades.prestige_courage_loss > 0? Math.pow(0.95, data.persist.upgrades.prestige_courage_loss) : 1)
 
     return multiplier
 }
@@ -36,8 +41,9 @@ function calculate_courage_loss_multiplier(data) {
 function calculate_courage_change(data) {
     let run_data = data.non_persist.run
 
-    let floor_loss_exponent = 2
-    let add_courage_loss = -Math.pow(floor_loss_exponent, run_data.floor - 1)
+    // Early floors keep the original doubling curve; from about floor 7 drain grows with the square
+    // of the floor instead, so going 10x deeper needs about 100x the power
+    let add_courage_loss = -Math.min(Math.pow(2, run_data.floor - 1), 1.3 * Math.pow(run_data.floor, 2))
 
     // Torch Upgrade
     add_courage_loss += (data.persist.upgrades.torch == 1? 0.25 : 0) + (data.persist.upgrades.torch_buff > 0? 0.05 * data.persist.upgrades.torch_buff : 0)
@@ -78,11 +84,11 @@ function calculate_health(data) {
     let return_health = 5
 
     // Endurance Training
-    return_health += (data.persist.upgrades.train_endurance > 0? data.persist.upgrades.train_endurance : 0)
+    return_health += (data.persist.upgrades.train_endurance > 0? 2 * data.persist.upgrades.train_endurance : 0)
 
-    return_health += (data.persist.upgrades.prestige_health > 0? Math.pow(2, data.persist.upgrades.prestige_health) : 0)
+    return_health *= (data.persist.upgrades.prestige_health > 0? Math.pow(1.2, data.persist.upgrades.prestige_health) : 1)
 
-    return_health *= (data.persist.upgrades.ascended_health > 0? 1 + (0.1 * data.persist.upgrades.ascended_health * data.persist.layers.ascension) : 1)
+    return_health *= (data.persist.upgrades.ascended_health > 0? Math.pow(1.6, data.persist.upgrades.ascended_health) : 1)
 
     // Transcendent Might
     return_health *= calculate_transcendent_might(data)
@@ -104,11 +110,14 @@ function calculate_defense(data) {
         return_defense += 1
     }
 
-    return_defense += (data.persist.upgrades.prestige_defense > 0? data.persist.upgrades.prestige_defense : 0)
+    return_defense *= (data.persist.upgrades.enhance_armor > 0? 1 + 0.1 * data.persist.upgrades.enhance_armor : 1)
 
-    return_defense += (data.persist.upgrades.enhance_armor > 0? 2 * data.persist.upgrades.enhance_armor : 0)
+    return_defense *= (data.persist.upgrades.prestige_defense > 0? Math.pow(1.2, data.persist.upgrades.prestige_defense) : 1)
 
-    return_defense *= (data.persist.upgrades.ascended_defense > 0? 1 + (0.1 * data.persist.upgrades.ascended_defense * data.persist.layers.ascension) : 1)
+    return_defense *= (data.persist.upgrades.ascended_defense > 0? Math.pow(1.6, data.persist.upgrades.ascended_defense) : 1)
+
+    // Transcendent Guard
+    return_defense *= (data.persist.upgrades.transcendent_guard > 0? Math.pow(2.5, data.persist.upgrades.transcendent_guard) : 1)
 
     // Ascendant Form
     return_defense *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
@@ -122,13 +131,13 @@ function calculate_attack(data) {
     // Combat Sword
     return_attack += (data.persist.upgrades.combat_sword > 0? data.persist.upgrades.combat_sword : 0)
 
-    return_attack += (data.persist.upgrades.enhance_sword > 0? 2 * Math.pow(1.25, data.persist.upgrades.enhance_sword) : 0)
+    return_attack *= (data.persist.upgrades.enhance_sword > 0? 1 + 0.1 * data.persist.upgrades.enhance_sword : 1)
 
     // Prestige Attack
-    return_attack += (data.persist.upgrades.prestige_attack > 0? 0.5 * data.persist.upgrades.prestige_attack : 0)
+    return_attack *= (data.persist.upgrades.prestige_attack > 0? Math.pow(1.2, data.persist.upgrades.prestige_attack) : 1)
 
     // Ascension Attack
-    return_attack *= (data.persist.upgrades.ascended_attack > 0? 1 + (0.1 * data.persist.upgrades.ascended_attack * data.persist.layers.ascension) : 1)
+    return_attack *= (data.persist.upgrades.ascended_attack > 0? Math.pow(1.37, data.persist.upgrades.ascended_attack) : 1)
 
     // Transcendent Might
     return_attack *= calculate_transcendent_might(data)
@@ -146,10 +155,13 @@ function calculate_attack_speed(data) {
     return_attack_speed += (data.persist.upgrades.train_agility > 0? (0.1 * data.persist.upgrades.train_agility) : 0)
 
     // P-Agility
-    return_attack_speed += (data.persist.upgrades.prestige_agility > 0? (0.1 * data.persist.upgrades.prestige_agility) : 0)
+    return_attack_speed *= (data.persist.upgrades.prestige_agility > 0? Math.pow(1.1, data.persist.upgrades.prestige_agility) : 1)
 
     // Ascended Vigor
-    return_attack_speed *= (data.persist.upgrades.ascended_vigor > 0? 1 + (0.05 * data.persist.upgrades.ascended_vigor * data.persist.layers.ascension) : 1)
+    return_attack_speed *= (data.persist.upgrades.ascended_vigor > 0? Math.pow(1.26, data.persist.upgrades.ascended_vigor) : 1)
+
+    // Phase Step
+    return_attack_speed *= (data.persist.upgrades.phase_step > 0? Math.pow(1.26, data.persist.upgrades.phase_step) : 1)
 
     // Ascendant Form
     return_attack_speed *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
@@ -161,14 +173,26 @@ function calculate_move_speed_multiplier(data) {
     let multiplier = 1
 
     multiplier *= (data.persist.upgrades.cartography > 0? 1 + 0.05 * data.persist.upgrades.cartography : 1)
-    multiplier *= (data.persist.upgrades.prestige_speed > 0? 1 + 0.1 * data.persist.upgrades.prestige_speed : 1)
-    multiplier *= (data.persist.upgrades.ascended_speed > 0? 1 + (0.1 * data.persist.upgrades.ascended_speed * data.persist.layers.ascension) : 1)
+    multiplier *= (data.persist.upgrades.prestige_speed > 0? Math.pow(1.12, data.persist.upgrades.prestige_speed) : 1)
+    multiplier *= (data.persist.upgrades.ascended_speed > 0? Math.pow(1.25, data.persist.upgrades.ascended_speed) : 1)
+    // Phase Step
+    multiplier *= (data.persist.upgrades.phase_step > 0? Math.pow(1.26, data.persist.upgrades.phase_step) : 1)
 
     return multiplier
 }
 
 function calculate_transcendent_might(data) {
-    return (data.persist.upgrades.transcendent_might > 0? 1 + (0.25 * data.persist.upgrades.transcendent_might * data.persist.layers.transcendence) : 1)
+    return (data.persist.upgrades.transcendent_might > 0? Math.pow(2.5, data.persist.upgrades.transcendent_might) : 1)
+}
+
+// Enemy stats follow the original curves on early floors, then grow with the square of the floor
+function calculate_enemy_stats(floor) {
+    return {
+        health: 2 * Math.min(Math.pow(1.5, floor - 1), Math.pow(floor, 2)),
+        attack: Math.min(Math.pow(1.3, floor - 1), 0.3 * Math.pow(floor, 2)),
+        defense: Math.floor(0.05 * Math.pow(floor, 2)),
+        speed: 1
+    }
 }
 
 function calculate_crit_chance(data) {
@@ -190,7 +214,7 @@ function calculate_move_speed(data) {
     
     // Panicked Pace - MULTIPLICATIVE
     if (data.persist.upgrades.growing_pace > 0) {
-        let courage_scaled_multiplier = 1 + (((0.1 * data.persist.upgrades.growing_pace)) * (courage_ratio))
+        let courage_scaled_multiplier = 1 + (0.05 * data.persist.upgrades.growing_pace * (1 - courage_ratio))
         base_move_speed *= courage_scaled_multiplier
     }
     
@@ -206,7 +230,7 @@ function calculate_move_speed(data) {
 function calculate_research_gain(data) {
     let run_data = data.non_persist.run
 
-    let base_research_gain = (run_data.floor - 1) + run_data.progress / 10
+    let base_research_gain = 5 * ((run_data.floor - 1) + run_data.progress / 10)
 
     // Lucky Find
     base_research_gain += (data.persist.upgrades.lucky_find > 0? 0.25 * data.persist.upgrades.lucky_find * (run_data.floor - 1) : 0)
@@ -217,11 +241,11 @@ function calculate_research_gain(data) {
     base_research_gain += (data.persist.upgrades.enemy_bounty > 0? 0.5 * data.persist.upgrades.enemy_bounty * data.non_persist.run.enemy_kills : 0)
 
     // Compounding Discoveries
-    base_research_gain *= (data.persist.upgrades.compound_research > 0? 1 + (0.1 * data.persist.upgrades.compound_research * (data.non_persist.run.floor)) : 1)
+    base_research_gain *= (data.persist.upgrades.compound_research > 0? 1 + (0.01 * data.persist.upgrades.compound_research * ((data.non_persist.run.floor - 1) + run_data.progress / 10)) : 1)
 
-    base_research_gain *= (data.persist.upgrades.prestige_research > 0? 1 + 0.5 * data.persist.upgrades.prestige_research : 1)
+    base_research_gain *= (data.persist.upgrades.prestige_research > 0? Math.pow(1.5, data.persist.upgrades.prestige_research) : 1)
 
-    base_research_gain *= (data.persist.upgrades.ascended_research > 0? 1 + (0.5 * data.persist.upgrades.ascended_research * data.persist.layers.ascension) : 1)
+    base_research_gain *= (data.persist.upgrades.ascended_research > 0? Math.pow(2, data.persist.upgrades.ascended_research) : 1)
 
     // Timeless Knowledge
     base_research_gain *= (data.persist.upgrades.timeless_knowledge > 0? 1 + data.persist.upgrades.timeless_knowledge : 1)
@@ -249,6 +273,10 @@ function evaluate_dynamic_amount(dynamic, level) {
     if (dynamic.type == "multiply") {
         return level == 0 ? dynamic.value : dynamic.value * Math.pow(dynamic.multiplier, level);
     }
+    // Pure multiplier: x1 before the first level
+    if (dynamic.type == "power") {
+        return Math.pow(dynamic.multiplier, level);
+    }
     if (dynamic.type == "multiply_effect") {
         return level == 0 ? 0 : dynamic.value * Math.pow(dynamic.multiplier, level);
     }
@@ -263,7 +291,10 @@ function calculate_start_courage(data) {
 
     return_courage *= (data.persist.upgrades.prestige_courage > 0? 1 + 0.25 * data.persist.upgrades.prestige_courage : 1)
 
-    return_courage *= (data.persist.upgrades.ascended_courage > 0? 1 + (0.1 * data.persist.upgrades.ascended_courage * data.persist.layers.ascension) : 1)
+    return_courage *= (data.persist.upgrades.ascended_courage > 0? Math.pow(1.19, data.persist.upgrades.ascended_courage) : 1)
+
+    // Eternal Resolve
+    return_courage *= (data.persist.upgrades.eternal_resolve > 0? Math.pow(1.26, data.persist.upgrades.eternal_resolve) : 1)
 
     // Ascendant Form
     return_courage *= (data.persist.upgrades.ascendant_form > 0? 1 + 0.01 * data.persist.upgrades.ascendant_form : 1)
@@ -279,14 +310,18 @@ function calculate_player_stats(data) {
     data.non_persist.run.character_stats.health = data.non_persist.run.character_stats.max_health
 }
 
+// Each layer pays out based on how far past its required floor you got
+const LAYER_REWARD_SCALE = 2
+const LAYER_REWARD_EXPONENT = 3
+
+function calculate_layer_reward(floor, required_floor) {
+    return LAYER_REWARD_SCALE * Math.pow(floor / required_floor, LAYER_REWARD_EXPONENT)
+}
+
 function calculate_prestige_reward(data) {
     let return_prestige = 0
-    if ((data.persist.other.records.floor - 1) < 5) {
-        return_prestige = 0
-    }
-    else
-    {
-        return_prestige = Math.pow(data.persist.other.records.floor, 0.7) - 2
+    if (data.persist.other.records.floor >= PRESTIGE_FLOOR) {
+        return_prestige = calculate_layer_reward(data.persist.other.records.floor, PRESTIGE_FLOOR)
     }
     //return prestige multiplied by ascension prestige upgrade
     return_prestige *= (data.persist.upgrades.paradox_engine > 0? Math.pow(1.5, data.persist.upgrades.paradox_engine) : 1)
@@ -295,7 +330,8 @@ function calculate_prestige_reward(data) {
 
 
 function calculate_ascension_reward(data) {
-    let floor_bonus = Math.floor((data.persist.layers.max_floor_this_ascension - 1) / 3)
+    let max_floor = data.persist.layers.max_floor_this_ascension || 0
+    let floor_bonus = (max_floor >= ASCENSION_FLOOR? calculate_layer_reward(max_floor, ASCENSION_FLOOR) : 0)
 
     // Ascended Insight
     floor_bonus *= (data.persist.upgrades.ascended_insight > 0? 1 + 0.1 * data.persist.upgrades.ascended_insight : 1)
@@ -304,11 +340,10 @@ function calculate_ascension_reward(data) {
 }
 
 function calculate_transcendence_reward(data) {
-    let ascensions = data.persist.layers.ascension || 0
     let max_floor = data.persist.layers.max_floor_this_ascension || 0
-    let transcendence_reward = Math.floor(ascensions / 5) + (max_floor / 10)
+    let transcendence_reward = (max_floor >= TRANSCENDENCE_FLOOR? calculate_layer_reward(max_floor, TRANSCENDENCE_FLOOR) : 0)
 
-    return Math.max(1, transcendence_reward * (data.persist.upgrades.infinite_recursion > 0? 1.2 : 1))
+    return transcendence_reward * (data.persist.upgrades.infinite_recursion > 0? Math.pow(1.2, data.persist.upgrades.infinite_recursion) : 1)
 }
 function calculate_upgrade_stats(data) {
     let upgrades = data.persist.upgrades
@@ -332,8 +367,8 @@ function calculate_upgrade_stats(data) {
 
     let research_multiplier = 1
     research_multiplier *= (upgrades.careful_looking > 0? 1 + 0.2 * upgrades.careful_looking : 1)
-    research_multiplier *= (upgrades.prestige_research > 0? 1 + 0.5 * upgrades.prestige_research : 1)
-    research_multiplier *= (upgrades.ascended_research > 0? 1 + (0.5 * upgrades.ascended_research * data.persist.layers.ascension) : 1)
+    research_multiplier *= (upgrades.prestige_research > 0? Math.pow(1.5, upgrades.prestige_research) : 1)
+    research_multiplier *= (upgrades.ascended_research > 0? Math.pow(2, upgrades.ascended_research) : 1)
     research_multiplier *= (upgrades.timeless_knowledge > 0? 1 + upgrades.timeless_knowledge : 1)
     add_multiplier("Research Gain", research_multiplier)
     add_flat("Flat Research / Floor", (upgrades.lucky_find > 0? 0.25 * upgrades.lucky_find : 0))
@@ -350,7 +385,7 @@ function calculate_upgrade_stats(data) {
     add_multiplier("Max Health", calculate_health(data) / 5)
     add_flat("Health Regen", (upgrades.slow_recover > 0? 0.125 * Math.pow(1.5, upgrades.slow_recover) : 0) + (upgrades.well_cheers > 0? 0.05 * upgrades.well_cheers : 0), "/s")
     add_multiplier("Attack", calculate_attack(data))
-    add_multiplier("Defense", calculate_defense(data))
+    add_flat("Defense", calculate_defense(data))
     add_multiplier("Attack Speed", calculate_attack_speed(data))
     add_multiplier("Move Speed", (1 + (upgrades.combat_boots > 0? 0.1 * upgrades.combat_boots : 0)) * calculate_move_speed_multiplier(data))
     add_flat("Crit Chance", 100 * calculate_crit_chance(data), "%")
@@ -360,15 +395,16 @@ function calculate_upgrade_stats(data) {
 
     // Panicked Pace: move speed scales up as courage drops, maxing out at 0 courage
     if (upgrades.growing_pace > 0) {
-        add_multiplier("Panic Pace (max)", 1 + 0.1 * upgrades.growing_pace)
+        add_multiplier("Panic Pace (max)", 1 + 0.05 * upgrades.growing_pace)
         if (data.non_persist.run_active) {
             let courage_ratio = data.non_persist.run.character_stats.courage / data.non_persist.run.character_stats.max_courage
-            stats.push({ label: "Panic Pace (now)", prefix: "x", value: 1 + 0.1 * upgrades.growing_pace * (courage_ratio), suffix: "" })
+            stats.push({ label: "Panic Pace (now)", prefix: "x", value: 1 + 0.05 * upgrades.growing_pace * (1 - courage_ratio), suffix: "" })
         }
     }
 
     add_multiplier("Prestige Gain", (upgrades.paradox_engine > 0? Math.pow(1.5, upgrades.paradox_engine) : 1))
     add_multiplier("Ascension Gain", (upgrades.ascended_insight > 0? 1 + 0.1 * upgrades.ascended_insight : 1))
+    add_multiplier("Transcendence Gain", (upgrades.infinite_recursion > 0? Math.pow(1.2, upgrades.infinite_recursion) : 1))
 
     let cost_multiplier = 1
     cost_multiplier *= (upgrades.eternal_scaling > 0? 1 - (0.05 * upgrades.eternal_scaling) : 1)
